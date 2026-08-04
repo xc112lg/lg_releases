@@ -406,37 +406,30 @@ release_and_notify() {
 
 <b>Device:</b>Blossom
 <b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
-<b>🤖 Android Version:</b> 16 | QPR2
+<b>🤖 Android Version:</b> 15
 <b>📅 Build Date:</b> {{BUILD_DATE}}
 <b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
-<b>📸 <a href="https://t.me/xc112lgblossomsc">Screenshots</a></b>
 
 {{DOWNLOADS_SECTION}}
 
-<b>🐞 Issues:</b>
-{{ISSUES}}
-
-<b>🐞 Fixes:</b>
-{{FIXES}}
-
 <b>📝 Notes:</b>
-{{NOTES}}
+• Work with both core and basic gapps
+• Signed
+• July security patch
+• Default Kernel Swan
 
 <b>❤️ Credits & Thanks:</b>
-@HaiKitoo and 0kaarun for trees
-zyexro for kernel
-@Yohanyuan for audio fix
-@astechpro20 for msg template
-Yui Onanii, fukiame, @snnbyyds, <a href="http://t.me/Sushrut1101">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
-Thanks to <a href="http://foss.crave.io">crave.io</a> for server
-0kaarun & Yohan Yuan for their help
-Thanks to all other devs
+• npjohnson
+• lineageOS dev team
+• ROMSG for kernel
+• Thanks to <a href=\"http://foss.crave.io\">crave.io</a> for server
+• Thanks to all other devs
 
 <b>🌐 Stay Updated:</b>
-📢 @xc112lgblossomupdate
-📢 @xc112lgblossomupdate1
+📢 @LGG6_group
+📢 @LGG6_releases
 
-#blossom #UNOFFICIAL #{{HASHTAG}} #lunaridolby #Rom
+#LGG6 #UNOFFICIAL #{{HASHTAG}}  #Rom
 TEMPLATE
 
     telegram_message="${telegram_message//\{\{TITLE\}\}/$title}"

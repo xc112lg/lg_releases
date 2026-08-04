@@ -358,7 +358,7 @@ run_axion() {
 # into it. Sets STAGE_DIR to the directory to cd into for stage 2.
 # ------------------------------------------------------------------------------
 stage_artifacts() {
-    local repo="${RELEASE_REPO:-blossom_releases}"
+    local repo="${RELEASE_REPO:-testonly}"
 
     local built_zips=(out/target/product/*/*.zip)
     if [ ${#built_zips[@]} -eq 0 ]; then

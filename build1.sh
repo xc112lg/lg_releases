@@ -154,29 +154,13 @@ run_derpfest() {
 # ------------------------------------------------------------------------------
 run_crdroid() {
     common_prep
-    rm -rf .repo/local_manifests
-    repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth 1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    . build/envsetup.sh
-    export WITH_GMS=false
-    export TARGET_INCLUDE_BCR=false
+        repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1
+        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd .repo/local_manifests
+        repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
+        /opt/crave/resync.sh
     common_env_exports
 
-    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values
-    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values/cr_config.xml \
-        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/core/res/res/values/cr_config.xml
 
-    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values
-    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
-        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
-    sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
-    sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m bacon
 
     run_upload_crdroid
 }

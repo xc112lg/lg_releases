@@ -77,31 +77,20 @@ load_env() {
 
 common_prep() {
     load_env
-   # git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-    git config --global --unset-all url."https://github.com/".insteadOf 2>/dev/null || true
-    git config --global url."https://${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
-    rm -rf .repo/local_manifests/
-    rm -rf device/xiaomi
-    rm -rf vendor/xiaomi/blossom
-    rm -rf kernel/xiaomi/blossom
-    rm -rf packages/apps/Settings
-    rm -rf TMP_PATCHES
-    rm -rf hardware/lineage/
-    sudo apt update >/dev/null 2>&1
-    sudo apt install patchelf -y >/dev/null 2>&1
+rm -rf .repo/local_manifests/
+rm -rf device/lge
+rm -rf vendor/lge/msm8996-common kernel/lge/msm8996
+rm -rf vendor/bacon-priv/keys vendor/lineage-priv/keys
 }
 
 common_env_exports() {
     export TARGET_USES_PICO_GAPPS=true
-    export TARGET_INCLUDE_VIA=true
-    export TARGET_INCLUDE_REVAMPED=true
     export SELINUX_IGNORE_NEVERALLOWS=true
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
     export TARGET_PREBUILT_BCR=false
     export TARGET_ENABLE_BLUR=true
     export AXION_MAINTAINER=xc112lg
-    sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 
 # ------------------------------------------------------------------------------

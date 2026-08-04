@@ -546,36 +546,63 @@ TEMPLATE
         local url="${remaining%%|*}"
         local size="${remaining##*|}"
 
-        local label="File"
-        local download_links=""
-
-        if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
-            label="📱 Vanilla ROM"
-            download_links="<a href=\"${url}\">GitHub</a>"
-        elif [[ "$filename" == *"GApps"* ]] || [[ "$filename" == *"gapps"* ]]; then
-            label="🎯 GApps Package"
-            download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
-        elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
-            label="🔧 Recovery Image"
-            download_links="<a href=\"${url}\">Download</a>"
-        elif [[ "$filename" == *.zip ]]; then
-            label="📦 ROM Package"
-            download_links="<a href=\"${url}\">Download</a>"
-        elif [[ "$filename" == *.img ]]; then
-            label="💾 Image File"
-            download_links="<a href=\"${url}\">Download</a>"
+# Known device codenames to detect in the filename (add more as needed)
+    known_devices=( "h870d" "h870" "h871" "h872" "h873" "h930" "us997" "ls993" "vs988" "as993")
+    device_code=""
+    filename_lower=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
+    for dev in "${known_devices[@]}"; do
+        if [[ "$filename_lower" == *"$dev"* ]]; then
+            device_code="$dev"
+            break
         fi
-
-        DOWNLOADS_SECTION+="
-🔹 ${label} - ${download_links} (${size})"
-        DOWNLOADS_SECTION+="
-🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
     done
 
+    # Create label based on filename but don't show actual filename
+    label="File"
+    download_links=""
+
+    if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
+        if [ -n "$device_code" ]; then
+            label="📱 ${device_code} Vanilla ROM"
+        else
+            label="📱 Vanilla ROM"
+        fi
+        download_links="<a href=\"${url}\">GitHub</a>"
+    elif [[ "$filename" == *"GApps"* ]] || [[ "$filename" == *"gapps"* ]]; then
+        label="🎯 GApps Package"
+        download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
+    elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
+        if [ -n "$device_code" ]; then
+            label="🔧 ${device_code} Recovery Image"
+        else
+            label="🔧 Recovery Image"
+        fi
+        download_links="<a href=\"${url}\">Download</a>"
+    elif [[ "$filename" == *.zip ]]; then
+        if [ -n "$device_code" ]; then
+            label="📦 ${device_code} ROM Package"
+        else
+            label="📦 ROM Package"
+        fi
+        download_links="<a href=\"${url}\">Download</a>"
+    elif [[ "$filename" == *.img ]]; then
+        if [ -n "$device_code" ]; then
+            label="💾 ${device_code} Image File"
+        else
+            label="💾 Image File"
+        fi
+        download_links="<a href=\"${url}\">Download</a>"
+    fi
+
+    # Only show label and links, NO original full filename anywhere
     DOWNLOADS_SECTION+="
+🔹 ${label} - ${download_links} (${size})"
 
+done
 
-<b>📲 <a href=\"https://telegra.ph/flashing-instruction-11-15\">Installation Guide</a></b>"
+# GApps line shown once, not repeated per entry
+DOWNLOADS_SECTION+="
+🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-15/\">SourceForge</a>"
 
     # Substitute placeholders now that CHANGELOG_URL/DOWNLOADS_SECTION are known
     telegram_message="${telegram_message//\{\{CHANGELOG_URL\}\}/$CHANGELOG_URL}"

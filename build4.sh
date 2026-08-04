@@ -422,7 +422,7 @@ release_and_notify() {
 • npjohnson
 • lineageOS dev team
 • ROMSG for kernel
-• Thanks to <a href=\"http://foss.crave.io\">crave.io</a> for server
+• Thanks to <a href="http://foss.crave.io">crave.io</a> for server
 • Thanks to all other devs
 
 <b>🌐 Stay Updated:</b>

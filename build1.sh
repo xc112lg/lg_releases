@@ -91,6 +91,7 @@ common_env_exports() {
     export TARGET_PREBUILT_BCR=false
     export TARGET_ENABLE_BLUR=true
     export AXION_MAINTAINER=xc112lg
+    curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/init.qcom.usb.rc.patch | patch -d device/lge/msm8996-common -p0
 }
 
 # ------------------------------------------------------------------------------

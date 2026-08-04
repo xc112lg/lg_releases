@@ -3,11 +3,19 @@
 # blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
 #
 # Usage:
-#   ./build.sh lunaris     # or lineage / evolution / axion / crdroid
+#   ./build.sh lunaris     # or lineage / evolution / axion / crdroid / derpfest
 #   ./build.sh axion upload   # skip the build, only stage + release + notify
 #                              # (uses whatever is already in out/target/product/*/*.zip)
 #   curl -sf <raw-url-to-this-file> | bash -s lunaris
 #   curl -sf <raw-url-to-this-file> | bash -s -- lineage
+#
+# Every ROM builds the same 5 sub-devices in a single pass: h872 / h870 /
+# us997 / h873 / h870d. Use the 3rd arg to scope which of them get built:
+#   ./build.sh crdroid build            # all 5 devices (default)
+#   ./build.sh crdroid build all        # same as above, explicit
+#   ./build.sh crdroid build h872       # just h872 (single-device build)
+#   ./build.sh lunaris build h870       # same idea for any other ROM
+# Naming a device not in that ROM's list is rejected.
 #
 # One script now does the whole pipeline per target (build → package → GitHub
 # release → Telegram announce), merging what used to be build.sh + upload.sh
@@ -33,14 +41,32 @@ shopt -s nullglob
 
 TARGET="${1:-}"
 MODE="${2:-build}"
+DEVICE="${3:-all}"
+
+# Every ROM builds one or more sub-devices in a single pass; DEVICE selects
+# among a given ROM's list (see the run_* functions below).
+declare -A ROM_DEVICES=(
+    [lunaris]="h872 h870 us997 h873 h870d"
+    [lineage]="h872 h870 us997 h873 h870d"
+    [evolution]="h872 h870 us997 h873 h870d"
+    [derpfest]="h872 h870 us997 h873 h870d"
+    [axion]="h872 h870 us997 h873 h870d"
+    [crdroid]="h872 h870 us997 h873 h870d"
+)
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload] [device]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload] [device]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
     echo "          already in out/target/product/*/*.zip"
+    echo ""
+    echo "  device  'all' (default) builds every device for that ROM, or name one"
+    echo "          of them for a single-device build. Valid devices per ROM:"
+    for rom in "${!ROM_DEVICES[@]}"; do
+        echo "            $rom: ${ROM_DEVICES[$rom]}"
+    done
     exit 1
 }
 
@@ -61,6 +87,18 @@ case "$MODE" in
         usage
         ;;
 esac
+
+if [ "$DEVICE" != "all" ]; then
+    valid_device=0
+    for d in ${ROM_DEVICES[$TARGET]}; do
+        [ "$d" = "$DEVICE" ] && valid_device=1 && break
+    done
+    if [ "$valid_device" -ne 1 ]; then
+        echo "✗ Unknown device '$DEVICE' for target '$TARGET'"
+        echo "  Valid devices for $TARGET: all, ${ROM_DEVICES[$TARGET]}"
+        usage
+    fi
+fi
 
 # ------------------------------------------------------------------------------
 # Shared setup (identical across all three variants)
@@ -114,9 +152,18 @@ run_evolution() {
     sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
 
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m evolution
+    local lunch_devices=(${ROM_DEVICES[evolution]})
+    if [ "$DEVICE" != "all" ]; then
+        lunch_devices=("$DEVICE")
+    fi
+
+    echo "▶ evolution: building device(s): ${lunch_devices[*]}"
+    for dev in "${lunch_devices[@]}"; do
+        echo "▶ evolution: lunch lineage_${dev}-bp4a-user"
+        lunch "lineage_${dev}-bp4a-user"
+        m installclean
+        m evolution
+    done
 
     run_upload_evolution
 }
@@ -140,9 +187,18 @@ run_derpfest() {
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    mka derp
+    local lunch_devices=(${ROM_DEVICES[derpfest]})
+    if [ "$DEVICE" != "all" ]; then
+        lunch_devices=("$DEVICE")
+    fi
+
+    echo "▶ derpfest: building device(s): ${lunch_devices[*]}"
+    for dev in "${lunch_devices[@]}"; do
+        echo "▶ derpfest: lunch lineage_${dev}-bp4a-user"
+        lunch "lineage_${dev}-bp4a-user"
+        m installclean
+        mka derp
+    done
 
     run_upload_derpfest
 }
@@ -164,21 +220,19 @@ run_crdroid() {
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
     . build/envsetup.sh
-    lunch lineage_h872-bp1a-userdebug
-    make installclean
-    m bacon
-    lunch lineage_h870-bp1a-userdebug
-    make installclean
-    m bacon
-    lunch lineage_us997-bp1a-userdebug
-    make installclean
-    m bacon
-    lunch lineage_h873-bp1a-userdebug
-    make installclean
-    m bacon
-    lunch lineage_h870d-bp1a-userdebug
-    make installclean
-    m bacon
+
+    local devices=(${ROM_DEVICES[crdroid]})
+    if [ "$DEVICE" != "all" ]; then
+        devices=("$DEVICE")
+    fi
+
+    echo "▶ crdroid: building device(s): ${devices[*]}"
+    for dev in "${devices[@]}"; do
+        echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
+        lunch "lineage_${dev}-bp1a-userdebug"
+        make installclean
+        m bacon
+    done
 
     run_upload_crdroid
 }
@@ -213,9 +267,18 @@ run_lineage() {
     export RBE_LOG=DEBUG
     export RBE_VERBOSE=1
 
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m bacon
+    local lunch_devices=(${ROM_DEVICES[lineage]})
+    if [ "$DEVICE" != "all" ]; then
+        lunch_devices=("$DEVICE")
+    fi
+
+    echo "▶ lineage: building device(s): ${lunch_devices[*]}"
+    for dev in "${lunch_devices[@]}"; do
+        echo "▶ lineage: lunch lineage_${dev}-bp4a-user"
+        lunch "lineage_${dev}-bp4a-user"
+        m installclean
+        m bacon
+    done
 
     run_upload_lineage
 }
@@ -239,9 +302,18 @@ run_lunaris() {
     common_env_exports
     sed -i "\$a ro.lunaris.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
 
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m bacon
+    local lunch_devices=(${ROM_DEVICES[lunaris]})
+    if [ "$DEVICE" != "all" ]; then
+        lunch_devices=("$DEVICE")
+    fi
+
+    echo "▶ lunaris: building device(s): ${lunch_devices[*]}"
+    for dev in "${lunch_devices[@]}"; do
+        echo "▶ lunaris: lunch lineage_${dev}-bp4a-user"
+        lunch "lineage_${dev}-bp4a-user"
+        m installclean
+        m bacon
+    done
 
     run_upload_lunaris
 }
@@ -265,9 +337,18 @@ run_axion() {
     export TARGET_IS_LOW_RAM=true
     #lunch lineage_blossom-bp4a-user
    # m installclean
-    axion blossom user va
-    m installclean
-    ax -br
+    local axion_devices=(${ROM_DEVICES[axion]})
+    if [ "$DEVICE" != "all" ]; then
+        axion_devices=("$DEVICE")
+    fi
+
+    echo "▶ axion: building device(s): ${axion_devices[*]}"
+    for dev in "${axion_devices[@]}"; do
+        echo "▶ axion: axion $dev user va"
+        axion "$dev" user va
+        m installclean
+        ax -br
+    done
     run_upload_axion
 }
 

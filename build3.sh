@@ -39,6 +39,9 @@
 #set -euo pipefail
 shopt -s nullglob
 
+# All 'echo' calls throughout this script are no-ops (output disabled).
+echo() { :; }
+
 TARGET="${1:-}"
 MODE="${2:-build}"
 DEVICE="${3:-all}"

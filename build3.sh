@@ -425,8 +425,6 @@ release_and_notify() {
 <b>🌐 Stay Updated:</b>
 📢 @LGG6_group
 📢 @LGG6_releases
-
-#LGG6 #UNOFFICIAL #{{HASHTAG}}
 TEMPLATE
 
     telegram_message="${telegram_message//\{\{TITLE\}\}/$title}"

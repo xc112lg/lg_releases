@@ -364,7 +364,7 @@ stage_artifacts() {
     rm -rf "$repo"
     git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
 
-    cp out/target/product/h872/*.zip "$repo/"
+    cp out/target/product/*/*.zip "$repo/"
 
     for img in out/target/product/*/recovery.img; do
         device=$(basename "$(dirname "$img")")
@@ -604,7 +604,7 @@ DOWNLOADS_SECTION+="
 
         local MSG_LENGTH=${#telegram_message}
         echo "Message length: $MSG_LENGTH characters"
-        local CAPTION_LIMIT=1024
+        local CAPTION_LIMIT=3500
         local FALLBACK=0
 
         if [ $MSG_LENGTH -le $CAPTION_LIMIT ]; then

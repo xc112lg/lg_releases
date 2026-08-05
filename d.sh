@@ -386,13 +386,12 @@ stage_artifacts() {
 # Telegram message comes from the one shared TEMPLATE below.
 # ------------------------------------------------------------------------------
 release_and_notify() {
-    local version_default="$1"
-    local banner_image="$2"
-    local title="$3"
-    local hashtag="$4"
-    local issues="$5"
-    local fixes="$6"
-    local notes="$7"
+    local banner_image="$1"
+    local title="$2"
+    local hashtag="$3"
+    local issues="$4"
+    local fixes="$5"
+    local notes="$6"
     local github_repo_default="${RELEASE_REPO:-lg_releases}"
 
     local telegram_message
@@ -452,7 +451,20 @@ TEMPLATE
         echo "Already authenticated with GitHub."
     fi
 
-    local version="${custom_version:-$version_default}"
+    # Extract version from the first zip filename found
+    local version=""
+    for zip_file in *.zip; do
+        if [ -f "$zip_file" ]; then
+            # Remove .zip extension to get version
+            version="${zip_file%.zip}"
+            break
+        fi
+    done
+    
+    if [ -z "$version" ]; then
+        echo "⚠ No zip files found in current directory. Using fallback tag."
+        version="Release-$(date '+%Y%m%d-%H%M%S')"
+    fi
 
     if gh release view "$version" &> /dev/null; then
         echo "Deleting existing tag and releases for $version..."
@@ -680,7 +692,6 @@ JSONEOF
 run_upload_evolution() {
     stage_artifacts
     release_and_notify \
-        "EvolutionX-16.0-$(date '+%Y%m%d')" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
         "EvolutionX-16.0" \
         "Evolution-X" \
@@ -700,7 +711,6 @@ Default Kernel Sashimi"
 run_upload_derpfest() {
     stage_artifacts
     release_and_notify \
-        "DerpFest-16.2-$(date '+%Y%m%d')" \
         "https://avatars.githubusercontent.com/u/95412874?s=200&v=4" \
         "DerpFest 16.2" \
         "DerpFest" \
@@ -720,7 +730,6 @@ Default Kernel Sashimi"
 run_upload_crdroid() {
     stage_artifacts
     release_and_notify \
-        "crDroid-$(date '+%Y%m%d')" \
         "https://avatars.githubusercontent.com/u/9610671?s=200&v=4" \
         "crDroid" \
         "crDroid" \
@@ -740,7 +749,6 @@ Default Kernel Sashimi"
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
-        "lineage-23.2-$(date '+%Y%m%d')" \
         "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
         "Lineage-23.2" \
         "lineage-23.2" \
@@ -758,7 +766,6 @@ Default Kernel Sashimi"
 run_upload_lunaris() {
     stage_artifacts
     release_and_notify \
-        "LunarisAOSP-$(date '+%Y%m%d')" \
         "https://avatars.githubusercontent.com/u/193316573?s=200&v=4" \
         "LunarisAOSP 16.2" \
         "LunarisAOSP" \
@@ -778,7 +785,6 @@ Default Kernel Sashimi"
 run_upload_axion() {
     stage_artifacts
     release_and_notify \
-        "AxionAOSP-$(date '+%Y%m%d')" \
         "https://avatars.githubusercontent.com/u/197447202?s=200&v=4" \
         "AxionAOSP" \
         "AxionAOSP" \

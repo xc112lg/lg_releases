@@ -137,32 +137,27 @@ common_env_exports() {
 # ------------------------------------------------------------------------------
 run_evolution() {
     common_prep
-    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
-    repo init -u https://github.com/Evolution-X/manifest -b bka --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    . build/envsetup.sh
-    export WITH_GMS=false
-    export TARGET_INCLUDE_BCR=false
+        repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs --depth=1
+        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lg .repo/local_manifests
+        repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
+        /opt/crave/resync.sh
     common_env_exports
-    sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
-    sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
-    sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
-    sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
+        sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
+        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
+        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
+    . build/envsetup.sh
 
-    local lunch_devices=(${ROM_DEVICES[evolution]})
+    local devices=(${ROM_DEVICES[crdroid]})
     if [ "$DEVICE" != "all" ]; then
-        lunch_devices=("$DEVICE")
+        devices=("$DEVICE")
     fi
 
-    echo "▶ evolution: building device(s): ${lunch_devices[*]}"
-    for dev in "${lunch_devices[@]}"; do
-        echo "▶ evolution: lunch lineage_${dev}-bp4a-user"
-        lunch "lineage_${dev}-bp4a-user"
-        m installclean
-        m evolution
+    echo "▶ crdroid: building device(s): ${devices[*]}"
+    for dev in "${devices[@]}"; do
+        echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
+        #lunch "lineage_${dev}-bp1a-userdebug"
+        #make installclean
+        #m bacon
     done
 
     run_upload_evolution

@@ -451,20 +451,8 @@ TEMPLATE
         echo "Already authenticated with GitHub."
     fi
 
-    # Extract version from the first zip filename found
-    local version=""
-    for zip_file in *.zip; do
-        if [ -f "$zip_file" ]; then
-            # Remove .zip extension to get version
-            version="${zip_file%.zip}"
-            break
-        fi
-    done
-    
-    if [ -z "$version" ]; then
-        echo "⚠ No zip files found in current directory. Using fallback tag."
-        version="Release-$(date '+%Y%m%d-%H%M%S')"
-    fi
+    # Use simple lgg6 device tag (minimal, clean)
+    local version="lgg6"
 
     if gh release view "$version" &> /dev/null; then
         echo "Deleting existing tag and releases for $version..."

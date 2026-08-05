@@ -604,7 +604,7 @@ DOWNLOADS_SECTION+="
 
         local MSG_LENGTH=${#telegram_message}
         echo "Message length: $MSG_LENGTH characters"
-        local CAPTION_LIMIT=3500
+        local CAPTION_LIMIT=1024
         local FALLBACK=0
 
         if [ $MSG_LENGTH -le $CAPTION_LIMIT ]; then

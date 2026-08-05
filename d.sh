@@ -561,16 +561,16 @@ TEMPLATE
         download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
     elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
         if [ -n "$device_code" ]; then
-            label="🔧 ${device_code} Recovery Image"
+            label="🔧 ${device_code} Recovery Img"
         else
-            label="🔧 Recovery Image"
+            label="🔧 Recovery Img"
         fi
         download_links="<a href=\"${url}\">Download</a>"
     elif [[ "$filename" == *.zip ]]; then
         if [ -n "$device_code" ]; then
-            label="📦 ${device_code} ROM Package"
+            label="📦 ${device_code} ROM"
         else
-            label="📦 ROM Package"
+            label="📦 ROM"
         fi
         download_links="<a href=\"${url}\">Download</a>"
     elif [[ "$filename" == *.img ]]; then

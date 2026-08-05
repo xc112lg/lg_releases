@@ -402,11 +402,10 @@ release_and_notify() {
     read -r -d '' telegram_message << TEMPLATE || true
 <b>{{TITLE}} | UNOFFICIAL📱</b>
 
-<b>Device:</b>Blossom
+<b>Device:</b>LG G6
 <b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
 <b>🤖 Android Version:</b> 15
-<b>📅 Build Date:</b> {{BUILD_DATE}}
-<b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
+<b>📅 Build Date:</b> {{BUILD_DATE}}<b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
 
 {{DOWNLOADS_SECTION}}
 

@@ -43,6 +43,9 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 DEVICE="${3:-all}"
 
+# Set repo name globally to ensure consistency across all functions
+RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
+
 # Every ROM builds one or more sub-devices in a single pass; DEVICE selects
 # among a given ROM's list (see the run_* functions below).
 declare -A ROM_DEVICES=(
@@ -353,7 +356,7 @@ run_axion() {
 # into it. Sets STAGE_DIR to the directory to cd into for stage 2.
 # ------------------------------------------------------------------------------
 stage_artifacts() {
-    local repo="${RELEASE_REPO:-lg_releases}"
+    local repo="$RELEASE_REPO"
 
     local built_zips=(out/target/product/*/*.zip)
     if [ ${#built_zips[@]} -eq 0 ]; then
@@ -393,7 +396,8 @@ release_and_notify() {
     local issues="$5"
     local fixes="$6"
     local notes="$7"
-    local github_repo_default="${RELEASE_REPO:-lg_releases}"
+    
+    local github_repo_default="$RELEASE_REPO"
 
     local telegram_message
     read -r -d '' telegram_message << TEMPLATE || true

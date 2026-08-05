@@ -405,7 +405,7 @@ release_and_notify() {
 <b>Device:</b>LG G6
 <b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
 <b>🤖 Android Version:</b> 15
-<b>📅 Build Date:</b> {{BUILD_DATE}}<b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
+<b>📅 Build Date:</b> {{BUILD_DATE}}
 
 {{DOWNLOADS_SECTION}}
 
@@ -426,7 +426,7 @@ release_and_notify() {
 📢 @LGG6_group
 📢 @LGG6_releases
 
-#LGG6 #UNOFFICIAL #{{HASHTAG}}  #Rom
+#LGG6 #UNOFFICIAL #{{HASHTAG}}
 TEMPLATE
 
     telegram_message="${telegram_message//\{\{TITLE\}\}/$title}"

@@ -804,7 +804,7 @@ Default Kernel Sashimi"
 load_env
 
 if [ "$MODE" = "upload" ]; then
-    echo "▶ Starting blossom upload-only: $TARGET"
+    command echo "▶ Starting blossom upload-only: $TARGET"
     case "$TARGET" in
         evolution) run_upload_evolution ;;
         lineage)   run_upload_lineage ;;
@@ -813,9 +813,9 @@ if [ "$MODE" = "upload" ]; then
         crdroid)   run_upload_crdroid ;;
         derpfest)  run_upload_derpfest ;;
     esac
-    echo "✓ Finished blossom upload-only: $TARGET"
+    command echo "✓ Finished blossom upload-only: $TARGET"
 else
-    echo "▶ Starting blossom build: $TARGET"
+    command echo "▶ Starting blossom build: $TARGET"
     case "$TARGET" in
         evolution) run_evolution ;;
         lineage)   run_lineage ;;
@@ -824,5 +824,5 @@ else
         crdroid)   run_crdroid ;;
         derpfest)  run_derpfest ;;
     esac
-    echo "✓ Finished blossom build: $TARGET"
+    command echo "✓ Finished blossom build: $TARGET"
 fi

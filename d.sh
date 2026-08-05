@@ -386,12 +386,13 @@ stage_artifacts() {
 # Telegram message comes from the one shared TEMPLATE below.
 # ------------------------------------------------------------------------------
 release_and_notify() {
-    local banner_image="$1"
-    local title="$2"
-    local hashtag="$3"
-    local issues="$4"
-    local fixes="$5"
-    local notes="$6"
+    local version_default="$1"
+    local banner_image="$2"
+    local title="$3"
+    local hashtag="$4"
+    local issues="$5"
+    local fixes="$6"
+    local notes="$7"
     local github_repo_default="${RELEASE_REPO:-lg_releases}"
 
     local telegram_message
@@ -451,8 +452,7 @@ TEMPLATE
         echo "Already authenticated with GitHub."
     fi
 
-    # Use simple lgg6 device tag (minimal, clean)
-    local version="lgg6"
+    local version="${custom_version:-$version_default}"
 
     if gh release view "$version" &> /dev/null; then
         echo "Deleting existing tag and releases for $version..."
@@ -561,9 +561,9 @@ TEMPLATE
         download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
     elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
         if [ -n "$device_code" ]; then
-            label="🔧 ${device_code} Recovery Img"
+            label="🔧 ${device_code} Recovery"
         else
-            label="🔧 Recovery Img"
+            label="🔧 Recovery"
         fi
         download_links="<a href=\"${url}\">Download</a>"
     elif [[ "$filename" == *.zip ]]; then
@@ -680,6 +680,7 @@ JSONEOF
 run_upload_evolution() {
     stage_artifacts
     release_and_notify \
+        "lgevo" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
         "EvolutionX-16.0" \
         "Evolution-X" \
@@ -699,6 +700,7 @@ Default Kernel Sashimi"
 run_upload_derpfest() {
     stage_artifacts
     release_and_notify \
+        "lgderp" \
         "https://avatars.githubusercontent.com/u/95412874?s=200&v=4" \
         "DerpFest 16.2" \
         "DerpFest" \
@@ -718,6 +720,7 @@ Default Kernel Sashimi"
 run_upload_crdroid() {
     stage_artifacts
     release_and_notify \
+        "lgcrDroid" \
         "https://avatars.githubusercontent.com/u/9610671?s=200&v=4" \
         "crDroid" \
         "crDroid" \
@@ -737,6 +740,7 @@ Default Kernel Sashimi"
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
+        "lglineage" \
         "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
         "Lineage-23.2" \
         "lineage-23.2" \
@@ -754,6 +758,7 @@ Default Kernel Sashimi"
 run_upload_lunaris() {
     stage_artifacts
     release_and_notify \
+        "lgLunarisAOSP" \
         "https://avatars.githubusercontent.com/u/193316573?s=200&v=4" \
         "LunarisAOSP 16.2" \
         "LunarisAOSP" \
@@ -773,6 +778,7 @@ Default Kernel Sashimi"
 run_upload_axion() {
     stage_artifacts
     release_and_notify \
+        "lgAxionAOSP" \
         "https://avatars.githubusercontent.com/u/197447202?s=200&v=4" \
         "AxionAOSP" \
         "AxionAOSP" \

@@ -403,7 +403,6 @@ release_and_notify() {
 <b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
 <b>🤖 Android Version:</b> 15
 <b>📅 Build Date:</b> {{BUILD_DATE}}
-<b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
 
 {{DOWNLOADS_SECTION}}
 

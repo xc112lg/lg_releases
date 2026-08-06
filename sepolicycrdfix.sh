@@ -33,3 +33,6 @@ get_prop(cameraserver, vendor_default_prop)
 EOF
 
 cat device/lge/msm8996-common/sepolicy/vendor/cameraserver.te
+
+
+grep -q '^import android.os.SystemClock$' packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/CameraActivity.kt && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-CameraActivity-enforce-cooldown-between-camera-rebin.patch | patch -d packages/apps/Aperture -p1

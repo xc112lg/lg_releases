@@ -367,7 +367,7 @@ stage_artifacts() {
     rm -rf "$repo"
     git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
 
-    #cp out/target/product/*/*.zip "$repo/"
+    cp out/target/product/*/*.zip "$repo/"
 
     for img in out/target/product/*/recovery.img; do
         device=$(basename "$(dirname "$img")")
@@ -750,7 +750,7 @@ run_upload_evolution() {
     release_and_notify \
         "lgevo" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
-        "EvolutionX-16.0" \
+        "EvolutionX-15.0" \
         "Evolution-X" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant

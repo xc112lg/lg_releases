@@ -614,7 +614,8 @@ DOWNLOADS_SECTION+="
     # saved to disk + printed so it can be pasted straight into two separate
     # xdaforums.com posts — one for ROM zips, one for recovery images)
     # ============================================
-    local BBCODE_FILE="bbcode_${version}.txt"
+    local BBCODE_FILE
+    BBCODE_FILE="$(pwd)/bbcode_${version}.txt"
     {
         echo "[LIST]"
         printf '%s\n' "${BBCODE_ROM[@]}"
@@ -625,7 +626,7 @@ DOWNLOADS_SECTION+="
         echo "[/LIST]"
     } > "$BBCODE_FILE"
 
-    echo "✓ XDA BBCode saved to $(pwd)/${BBCODE_FILE}"
+    echo "✓ XDA BBCode saved to ${BBCODE_FILE}"
     echo "-------------------- XDA BBCode --------------------"
     cat "$BBCODE_FILE"
     echo "------------------------------------------------------"

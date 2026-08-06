@@ -148,22 +148,6 @@ run_evolution() {
         sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
-    
-    mkdir -p device/lge/msm8996-common/sepolicy/vendor-user
-if [ ! -f device/lge/msm8996-common/sepolicy/vendor-user/file.te ]; then
-    echo 'type sensors_data_file, file_type, data_file_type;' > device/lge/msm8996-common/sepolicy/vendor-user/file.te
-fi
-grep -q "sepolicy/vendor-user" device/lge/msm8996-common/BoardConfigCommon.mk || cat >> device/lge/msm8996-common/BoardConfigCommon.mk << 'EOF'
-
-ifeq ($(TARGET_BUILD_VARIANT),user)
-BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor-user
-endif
-EOF
-
-grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
-sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
-    
-    
     . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})
@@ -173,7 +157,7 @@ sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("
 
     echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
-        echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
+        echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
         lunch "lineage_${dev}-bp1a-userdebug"
         make installclean
         m bacon

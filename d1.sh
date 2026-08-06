@@ -130,7 +130,7 @@ common_env_exports() {
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
     export TARGET_PREBUILT_BCR=false
-    export TARGET_ENABLE_BLUR=true
+    export TARGET_ENABLE_BLUR=false
     export AXION_MAINTAINER=xc112lg
     curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/init.qcom.usb.rc.patch | patch -d device/lge/msm8996-common -p0
 }
@@ -214,7 +214,7 @@ run_crdroid() {
         /opt/crave/resync.sh
     common_env_exports
         sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
+        #source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
     . build/envsetup.sh

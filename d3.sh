@@ -44,7 +44,7 @@ MODE="${2:-build}"
 DEVICE="${3:-all}"
 
 # Set repo name globally to ensure consistency across all functions
-RELEASE_REPO="${RELEASE_REPO:-testonly}"
+RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 
 # Every ROM builds one or more sub-devices in a single pass; DEVICE selects
 # among a given ROM's list (see the run_* functions below).
@@ -367,7 +367,7 @@ stage_artifacts() {
     rm -rf "$repo"
     git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
 
-   # cp out/target/product/*/*.zip "$repo/"
+    cp out/target/product/*/*.zip "$repo/"
 
     for img in out/target/product/*/recovery.img; do
         device=$(basename "$(dirname "$img")")

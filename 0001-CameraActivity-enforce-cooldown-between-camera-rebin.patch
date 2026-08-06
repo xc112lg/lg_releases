@@ -1,0 +1,86 @@
+From e1e21b8715e76bcdb3ed8a5f57107ccaad8f5531 Mon Sep 17 00:00:00 2001
+From: xz <xz@localhost>
+Date: Thu, 6 Aug 2026 05:04:43 +0000
+Subject: [PATCH] CameraActivity: enforce cooldown between camera rebinds
+
+flipCamera() (and every other action that calls bindCameraUseCases(),
+via canRestartCamera()) only gated on cameraState == IDLE.
+bindCameraUseCases() flips cameraState back to IDLE synchronously,
+right after cameraController.unbind(), well before the underlying
+camera HAL has actually finished tearing down the previous session
+natively. On msm8996, rebinding faster than the HAL can settle
+(e.g. rapid front/back switching) crashes mm-qcamera-daemon with a
+SIGSEGV on the CAM_MctBus thread inside libmmcamera2_stats_modules.so
+(AEC/AF port event handling), which eventually leaves the camera
+stack stuck and unable to switch at all.
+
+Track the timestamp of the last rebind and require a minimum
+CAMERA_REBIND_COOLDOWN_MS (800ms) to have elapsed before
+canRestartCamera() allows another one.
+---
+ .../org/lineageos/aperture/CameraActivity.kt  | 23 ++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/app/src/main/java/org/lineageos/aperture/CameraActivity.kt b/app/src/main/java/org/lineageos/aperture/CameraActivity.kt
+index 1f5b090..0baec80 100644
+--- a/app/src/main/java/org/lineageos/aperture/CameraActivity.kt
++++ b/app/src/main/java/org/lineageos/aperture/CameraActivity.kt
+@@ -29,6 +29,7 @@ import android.os.Looper
+ import android.os.Message
+ import android.os.PowerManager
+ import android.os.PowerManager.OnThermalStatusChangedListener
++import android.os.SystemClock
+ import android.provider.MediaStore
+ import android.util.Log
+ import android.view.GestureDetector
+@@ -279,6 +280,16 @@ open class CameraActivity : AppCompatActivity(R.layout.activity_camera) {
+ 
+     private lateinit var initialCameraFacing: CameraFacing
+ 
++    /**
++     * Timestamp (SystemClock.elapsedRealtime) of the last time bindCameraUseCases() was
++     * invoked. Used by canRestartCamera() to enforce CAMERA_REBIND_COOLDOWN_MS, since
++     * cameraState flips back to IDLE as soon as bindCameraUseCases() returns, well before
++     * the underlying camera HAL has actually finished tearing down the previous session.
++     * Switching (or changing camera mode) faster than the HAL can settle is what triggers
++     * the mm-qcamera-daemon MCT/3A crash on msm8996.
++     */
++    private var lastCameraRebindTimeMs = 0L
++
+     /**
+      * The currently shown URI.
+      */
+@@ -1432,12 +1443,16 @@ open class CameraActivity : AppCompatActivity(R.layout.activity_camera) {
+     /**
+      * Check if we can reinitialize the camera use cases
+      */
+-    private fun canRestartCamera() = cameraState == CameraState.IDLE && !countDownView.isVisible
++    private fun canRestartCamera() = cameraState == CameraState.IDLE &&
++        !countDownView.isVisible &&
++        SystemClock.elapsedRealtime() - lastCameraRebindTimeMs >= CAMERA_REBIND_COOLDOWN_MS
+ 
+     /**
+      * Rebind cameraProvider use cases
+      */
+     private fun bindCameraUseCases() {
++        lastCameraRebindTimeMs = SystemClock.elapsedRealtime()
++
+         // Show blurred preview
+         previewBlurView.freeze()
+         previewBlurView.isVisible = true
+@@ -2634,6 +2649,12 @@ open class CameraActivity : AppCompatActivity(R.layout.activity_camera) {
+ 
+         private const val SINGLE_CAPTURE_PHOTO_BUFFER_INITIAL_SIZE_BYTES = 8 * 1024 * 1024 // 8 MiB
+ 
++        // Minimum time between camera rebinds (flip camera, camera mode change, etc).
++        // Rebinding faster than the underlying camera HAL can tear down/re-init the
++        // previous session is known to crash mm-qcamera-daemon on msm8996 (CAM_MctBus
++        // SIGSEGV in libmmcamera2_stats_modules.so's AEC/AF port handling).
++        private const val CAMERA_REBIND_COOLDOWN_MS = 800L
++
+         // We need to return something small enough so as not to overwhelm Binder. 1MB is the
+         // per-process limit across all transactions. Camera2 sets a max pixel count of 51200.
+         // We set a max side length of 256, for a max pixel count of 65536. Even at 4 bytes per
+-- 
+2.43.0
+

@@ -149,21 +149,7 @@ run_evolution() {
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
     
-    mkdir -p device/lge/msm8996-common/sepolicy/vendor-user
-if [ ! -f device/lge/msm8996-common/sepolicy/vendor-user/file.te ]; then
-    echo 'type sensors_data_file, file_type, data_file_type;' > device/lge/msm8996-common/sepolicy/vendor-user/file.te
-fi
-grep -q "sepolicy/vendor-user" device/lge/msm8996-common/BoardConfigCommon.mk || cat >> device/lge/msm8996-common/BoardConfigCommon.mk << 'EOF'
 
-ifeq ($(TARGET_BUILD_VARIANT),user)
-BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor-user
-endif
-EOF
-
-grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
-sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
-    
-    
     . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})
@@ -233,6 +219,23 @@ run_crdroid() {
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
+       mkdir -p device/lge/msm8996-common/sepolicy/vendor-user
+if [ ! -f device/lge/msm8996-common/sepolicy/vendor-user/file.te ]; then
+    echo 'type sensors_data_file, file_type, data_file_type;' > device/lge/msm8996-common/sepolicy/vendor-user/file.te
+fi
+grep -q "sepolicy/vendor-user" device/lge/msm8996-common/BoardConfigCommon.mk || cat >> device/lge/msm8996-common/BoardConfigCommon.mk << 'EOF'
+
+ifeq ($(TARGET_BUILD_VARIANT),user)
+BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor-user
+endif
+EOF
+
+grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
+sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
+    
+    
+   
+   
     . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})

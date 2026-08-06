@@ -367,7 +367,7 @@ stage_artifacts() {
     rm -rf "$repo"
     git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
 
-    cp out/target/product/*/*.zip "$repo/"
+    #cp out/target/product/*/*.zip "$repo/"
 
     for img in out/target/product/*/recovery.img; do
         device=$(basename "$(dirname "$img")")

@@ -17,4 +17,19 @@ sed -i '$r /dev/stdin' device/lge/msm8996-common/sepolicy/vendor/file_contexts <
 /system/vendor/odm/etc/selinux/odm_sepolicy\.cil                 u:object_r:sepolicy_file:s0
 EOF
 
-cat device/lge/msm8996-common/sepolicy/vendor/file_contexts
+
+cat > device/lge/msm8996-common/sepolicy/vendor/cameraserver.te << 'EOF'
+# communicate with perfd
+allow cameraserver mpctl_data_file:dir search;
+allow cameraserver mpctl_data_file:sock_file write;
+allow cameraserver mpctl_socket:dir search;
+allow cameraserver mpctl_socket:sock_file write;
+allow cameraserver sysfs_kgsl:file r_file_perms;
+allow cameraserver camera_data_file:dir search;
+allow cameraserver mm-qcamerad:unix_dgram_socket sendto;
+set_prop(cameraserver, vendor_camera_prop)
+get_prop(cameraserver, vendor_default_prop)
+#r_dir_file(cameraserver, camera_data_file);
+EOF
+
+cat device/lge/msm8996-common/sepolicy/vendor/cameraserver.te

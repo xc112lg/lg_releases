@@ -367,7 +367,7 @@ stage_artifacts() {
     rm -rf "$repo"
     git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
 
-    cp out/target/product/*/*.zip "$repo/"
+    #cp out/target/product/*/*.zip "$repo/"
 
     for img in out/target/product/*/recovery.img; do
         device=$(basename "$(dirname "$img")")
@@ -631,29 +631,21 @@ DOWNLOADS_SECTION+="
     cat "$BBCODE_FILE"
     echo "------------------------------------------------------"
 
-    # Send the same BBCode as its own separate Telegram message (plain text —
-    # no parse_mode, so the [brackets] are sent as-is and not misread as HTML)
+    # Send the generated BBCode file itself as a document attachment (separate
+    # Telegram message) instead of pasting it inline as text.
     if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
-        echo "Sending XDA BBCode as a separate Telegram message..."
-        local BBCODE_JSON
-        BBCODE_JSON=$(mktemp)
-        cat > "$BBCODE_JSON" << JSONEOF
-{
-    "chat_id": $TELEGRAM_CHAT_ID,
-    "text": $(jq -R -s . < "$BBCODE_FILE")
-}
-JSONEOF
+        echo "Sending XDA BBCode .txt as a separate Telegram message..."
         local BBCODE_RESPONSE
         BBCODE_RESPONSE=$(curl -s -X POST \
-            -H "Content-Type: application/json" \
-            -d @"$BBCODE_JSON" \
-            "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage")
-        rm -f "$BBCODE_JSON"
+            -F "chat_id=${TELEGRAM_CHAT_ID}" \
+            -F "document=@${BBCODE_FILE}" \
+            -F "caption=XDA BBCode for ${version}" \
+            "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument")
 
         if echo "$BBCODE_RESPONSE" | grep -q '"ok":true'; then
-            echo "✓ XDA BBCode sent to Telegram (separate message)!"
+            echo "✓ XDA BBCode .txt sent to Telegram (separate message)!"
         else
-            echo "✗ Failed to send XDA BBCode to Telegram"
+            echo "✗ Failed to send XDA BBCode .txt to Telegram"
             echo "Response: $BBCODE_RESPONSE"
         fi
     else

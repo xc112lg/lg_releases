@@ -54,7 +54,8 @@ declare -A ROM_DEVICES=(
     [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
-    [crdroid]="h872 h870 us997 h873 h870d"
+    #[crdroid]="h872 h870 us997 h873 h870d"
+    [crdroid]="h872"
 )
 
 usage() {

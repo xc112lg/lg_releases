@@ -213,7 +213,7 @@ run_derpfest() {
 run_crdroid() {
     common_prep
         repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1
-        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd .repo/local_manifests
+        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd1 .repo/local_manifests
         repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
         /opt/crave/resync.sh
     common_env_exports

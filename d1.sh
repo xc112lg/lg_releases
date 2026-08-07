@@ -123,6 +123,7 @@ rm -rf .repo/local_manifests/
 rm -rf device/lge
 rm -rf vendor/lge/msm8996-common kernel/lge/msm8996
 rm -rf vendor/bacon-priv/keys vendor/lineage-priv/keys
+rm -rf packages/apps/Aperture
 }
 
 common_env_exports() {

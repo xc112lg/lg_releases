@@ -35,7 +35,7 @@ EOF
 cat device/lge/msm8996-common/sepolicy/vendor/cameraserver.te
 
 
-grep -q '^import android.os.SystemClock$' packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/CameraActivity.kt && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-CameraActivity-enforce-cooldown-between-camera-rebin.patch | patch -d packages/apps/Aperture -p1
+#grep -q '^import android.os.SystemClock$' packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/CameraActivity.kt && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-CameraActivity-enforce-cooldown-between-camera-rebin.patch | patch -d packages/apps/Aperture -p1
 
 
-grep -q 'mitigate mm-qcamera-daemon PDAF race' kernel/lge/msm8996/drivers/media/platform/msm/camera_v2/sensor/actuator/msm_actuator.c && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/msm_actuator_claf_delay1.patch | patch -d kernel/lge/msm8996 -p1
+#grep -q 'mitigate mm-qcamera-daemon PDAF race' kernel/lge/msm8996/drivers/media/platform/msm/camera_v2/sensor/actuator/msm_actuator.c && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/msm_actuator_claf_delay1.patch | patch -d kernel/lge/msm8996 -p1

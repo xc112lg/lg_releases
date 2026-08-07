@@ -1,0 +1,30 @@
+--- a/drivers/media/platform/msm/camera_v2/sensor/actuator/msm_actuator.c
++++ b/drivers/media/platform/msm/camera_v2/sensor/actuator/msm_actuator.c
+@@ -717,7 +717,7 @@
+ 	}
+ 	a_ctrl->i2c_tbl_index = 0;
+ 	CDBG("Exit\n");
+-	usleep_range(4000, 6000);
++
+ 	return rc;
+ }
+ 
+@@ -1072,6 +1072,9 @@
+ 	}
+ 	CDBG("Exit\n");
+ 
++	/* mitigate mm-qcamera-daemon PDAF race on direction change */
++	usleep_range(4000, 6000);
++
+ 	return rc;
+ }
+ #endif
+@@ -1193,7 +1196,7 @@
+ 	move_params->curr_lens_pos = curr_lens_pos;
+ 	a_ctrl->i2c_tbl_index = 0;
+ 	CDBG("Exit\n");
+-	usleep_range(4000, 6000);
++
+ 	return rc;
+ }
+ 

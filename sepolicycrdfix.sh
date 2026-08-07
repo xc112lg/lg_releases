@@ -34,6 +34,7 @@ EOF
 
 cat device/lge/msm8996-common/sepolicy/vendor/cameraserver.te
 
+[ "$(sha1sum vendor/lge/g6-common/proprietary/vendor/lib/libmmcamera2_stats_modules.so 2>/dev/null | cut -d' ' -f1)" = "c2d54db2750abfa19c4f6078fd715f5f58788e9d" ] && echo "already patched, skipping" || curl -sL https://github.com/xc112lg/lg_releases/raw/refs/heads/main/libmmcamera2_stats_modules.so -o vendor/lge/g6-common/proprietary/vendor/lib/libmmcamera2_stats_modules.so
 
 #grep -q '^import android.os.SystemClock$' packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/CameraActivity.kt && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-CameraActivity-enforce-cooldown-between-camera-rebin.patch | patch -d packages/apps/Aperture -p1
 

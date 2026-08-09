@@ -35,7 +35,6 @@
 # cat device/lge/msm8996-common/sepolicy/vendor/cameraserver.te
 
 [ "$(sha1sum vendor/lge/g6-common/proprietary/vendor/lib/libmmcamera2_stats_modules.so 2>/dev/null | cut -d' ' -f1)" = "c2d54db2750abfa19c4f6078fd715f5f58788e9d" ] && echo "already patched, skipping" || curl -sL https://github.com/xc112lg/lg_releases/raw/refs/heads/main/libmmcamera2_stats_modules.so -o vendor/lge/g6-common/proprietary/vendor/lib/libmmcamera2_stats_modules.so
-[ "$(sha1sum device/lge/g6-common/biometrics/BiometricsFingerprint.cpp 2>/dev/null | cut -d' ' -f1)" = "1674473ef7f7e3f079160dd802bedb7533c2974b" ] && echo "already patched, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/BiometricsFingerprint.cpp -o device/lge/g6-common/biometrics/BiometricsFingerprint.cpp
 #grep -q '^import android.os.SystemClock$' packages/apps/Aperture/app/src/main/java/org/lineageos/aperture/CameraActivity.kt && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-CameraActivity-enforce-cooldown-between-camera-rebin.patch | patch -d packages/apps/Aperture -p1
 
 

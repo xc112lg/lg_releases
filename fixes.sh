@@ -32,3 +32,4 @@ EOF
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
     
+curl -sL https://github.com/xc112lg/android_device_lge_g6-common/commit/89433a836be4dbc067d75ab631604039718322c3.patch | git -C device/lge/g6-common am

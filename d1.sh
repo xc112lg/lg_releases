@@ -54,8 +54,8 @@ declare -A ROM_DEVICES=(
     [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
-    #[crdroid]="h872 h870 us997 h873 h870d"
-    [crdroid]="h872"
+    [crdroid]="h872 h870 us997 h873 h870d"
+    #[crdroid]="h872"
 )
 
 usage() {
@@ -211,16 +211,16 @@ run_derpfest() {
 # crDroid's own docs use when adding cr_config.xml onto a non-crDroid tree)
 # ------------------------------------------------------------------------------
 run_crdroid() {
-    common_prep
-        repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1
-        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd1 .repo/local_manifests
-        repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
-        /opt/crave/resync.sh
+    # common_prep
+    #     repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1
+    #     git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd1 .repo/local_manifests
+    #     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
+    #     /opt/crave/resync.sh
     common_env_exports
-         sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
-         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh)
-         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
-         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
+        #  sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
+        #  source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh)
+        #  source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
+        #  source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
 
 
     

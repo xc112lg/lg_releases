@@ -224,7 +224,7 @@ run_crdroid() {
 
     
    
-   
+curl -sL https://github.com/xc112lg/android_device_lge_g6-common/commit/89433a836be4dbc067d75ab631604039718322c3.patch | git -C device/lge/g6-common am
     . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})

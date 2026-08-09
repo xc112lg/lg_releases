@@ -248,7 +248,7 @@ sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("
     echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
         echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
-        lunch "lineage_${dev}-bp1a-user"
+        lunch "lineage_${dev}-bp1a-userdebug"
         make installclean
         m bacon
     done

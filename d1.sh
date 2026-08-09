@@ -54,8 +54,8 @@ declare -A ROM_DEVICES=(
     [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
-    #[crdroid]="h872 h870 us997 h873 h870d"
-    [crdroid]="h872"
+    [crdroid]="h872 h870 us997 h873 h870d"
+    #[crdroid]="h872"
 )
 
 usage() {
@@ -211,26 +211,26 @@ run_derpfest() {
 # crDroid's own docs use when adding cr_config.xml onto a non-crDroid tree)
 # ------------------------------------------------------------------------------
 run_crdroid() {
-    common_prep
-        repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1
-        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd1 .repo/local_manifests
-        repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
-        /opt/crave/resync.sh
+    # common_prep
+    #     repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1
+    #     git clone https://github.com/xc112lg/local_manifests --depth 1 -b lgcrd1 .repo/local_manifests
+    #     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
+    #     /opt/crave/resync.sh
     common_env_exports
-        sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh)
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
-mkdir -p device/lge/msm8996-common/sepolicy/vendor-user
-if [ ! -f device/lge/msm8996-common/sepolicy/vendor-user/file.te ]; then
-    echo 'type sensors_data_file, file_type, data_file_type;' > device/lge/msm8996-common/sepolicy/vendor-user/file.te
-fi
-grep -q "sepolicy/vendor-user" device/lge/msm8996-common/BoardConfigCommon.mk || cat >> device/lge/msm8996-common/BoardConfigCommon.mk << 'EOF'
+#         sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
+#         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh)
+#         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework.sh)
+#         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
+# mkdir -p device/lge/msm8996-common/sepolicy/vendor-user
+# if [ ! -f device/lge/msm8996-common/sepolicy/vendor-user/file.te ]; then
+#     echo 'type sensors_data_file, file_type, data_file_type;' > device/lge/msm8996-common/sepolicy/vendor-user/file.te
+# fi
+# grep -q "sepolicy/vendor-user" device/lge/msm8996-common/BoardConfigCommon.mk || cat >> device/lge/msm8996-common/BoardConfigCommon.mk << 'EOF'
 
-ifeq ($(TARGET_BUILD_VARIANT),user)
-BOARD_VENDOR_SEPOLICY_DIRS := $(COMMON_PATH)/sepolicy/vendor-user $(BOARD_VENDOR_SEPOLICY_DIRS)
-endif
-EOF
+# ifeq ($(TARGET_BUILD_VARIANT),user)
+# BOARD_VENDOR_SEPOLICY_DIRS := $(COMMON_PATH)/sepolicy/vendor-user $(BOARD_VENDOR_SEPOLICY_DIRS)
+# endif
+# EOF
 
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py

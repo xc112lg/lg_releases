@@ -16,3 +16,19 @@ sed -i \
   -e '/<path name="headphones-hifi-dacdop-advanced">/a\        <ctl name="Es9218 Bypass" value="0" />' \
   -e '/<path name="headphones-hifi-dacdop-aux">/a\        <ctl name="Es9218 Bypass" value="0" />' \
   device/lge/g6-common/audio/mixer_paths_tasha.xml
+
+mkdir -p device/lge/msm8996-common/sepolicy/vendor-user
+if [ ! -f device/lge/msm8996-common/sepolicy/vendor-user/file.te ]; then
+    echo 'type sensors_data_file, file_type, data_file_type;' > device/lge/msm8996-common/sepolicy/vendor-user/file.te
+fi
+grep -q "sepolicy/vendor-user" device/lge/msm8996-common/BoardConfigCommon.mk || cat >> device/lge/msm8996-common/BoardConfigCommon.mk << 'EOF'
+
+ifeq ($(TARGET_BUILD_VARIANT),user)
+BOARD_VENDOR_SEPOLICY_DIRS := $(COMMON_PATH)/sepolicy/vendor-user $(BOARD_VENDOR_SEPOLICY_DIRS)
+endif
+EOF
+
+
+grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
+sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
+    

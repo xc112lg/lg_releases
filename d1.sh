@@ -147,8 +147,7 @@ run_evolution() {
         repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
         /opt/crave/resync.sh
     common_env_exports
-        sed -i '$a -include vendor/lineage-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
+        sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
         source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/sepolicycrdfix.sh)
     
 
@@ -162,9 +161,9 @@ run_evolution() {
     echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
         echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
-        lunch "lineage_${dev}-bp1a-userdebug"
+        lunch "lineage_${dev}-bp1a-user"
         make installclean
-        m bacon
+        m evolution
     done
 
     run_upload_evolution

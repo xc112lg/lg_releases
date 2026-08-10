@@ -1,0 +1,34 @@
+--- a/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c	2026-08-10 04:36:56.290066194 +0000
++++ b/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c	2026-08-10 04:36:56.302539915 +0000
+@@ -11271,6 +11271,11 @@
+ 
+ 	ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
+ 
++	if (unlikely(!ndev)) {
++		WL_ERR(("wl_notify_mic_status: ndev is NULL, dropping stale event\n"));
++		return 0;
++	}
++
+ 	mutex_lock(&cfg->usr_sync);
+ 	if (flags & WLC_EVENT_MSG_GROUP)
+ 		key_type = NL80211_KEYTYPE_GROUP;
+@@ -11313,6 +11318,19 @@
+ 
+ 	ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
+ 
++	/*
++	 * cfgdev_to_wlc_ndev() can legitimately return NULL if the
++	 * net_device backing this cfgdev has already been torn down
++	 * (e.g. Wi-Fi disabled / interface removed) while a PFN/PNO
++	 * "network found" event from firmware is still in flight.
++	 * Passing a NULL ndev into cfg80211_disconnected() (or the
++	 * sched-scan-results path below) dereferences it unconditionally
++	 * and crashes the kernel. Bail out safely instead.
++	 */
++	if (unlikely(!ndev)) {
++		WL_ERR(("wl_notify_pfn_status: ndev is NULL, dropping stale PNO event\n"));
++		return 0;
++	}
+ 
+ #ifndef WL_SCHED_SCAN
+ #ifndef CUSTOMER_HW4

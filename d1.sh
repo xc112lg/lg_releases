@@ -381,7 +381,11 @@ stage_artifacts() {
         device=$(basename "$(dirname "$img")")
         cp "$img" "$repo/${device}_recovery.img"
     done
-
+    
+    for img in out/target/product/*/boot.img; do
+        device=$(basename "$(dirname "$img")")
+        cp "$img" "$repo/${device}_boot.img"
+    done
     cd "$repo"
 
     # lineage's upevo.sh drops the stock recovery/OTA package before uploading

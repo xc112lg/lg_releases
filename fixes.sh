@@ -35,5 +35,5 @@ sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("
 curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/init.qcom.usb.rc.patch | patch -d device/lge/msm8996-common -p0
 
 curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-battery-config-override-fixed.patch  | patch -d device/lge/g6-common -p1
-#curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-bcmdhd-fix-NULL-ndev-deref-in-wl_notify_pfn_status.patch  | patch -d kernel/lge/msm8996 -p1
+curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-bcmdhd-fix-NULL-ndev-deref-in-wl_notify_pfn_status.patch  | patch -d kernel/lge/msm8996 -p1
 #curl -sL https://github.com/xc112lg/android_device_lge_g6-common/commit/89433a836be4dbc067d75ab631604039718322c3.patch | git -C device/lge/g6-common am

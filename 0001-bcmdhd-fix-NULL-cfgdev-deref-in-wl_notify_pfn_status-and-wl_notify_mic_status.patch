@@ -1,0 +1,46 @@
+--- a/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c	2026-08-10 19:56:20.351422860 +0000
++++ b/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c	2026-08-10 19:56:33.707407411 +0000
+@@ -11269,6 +11269,19 @@
+ 	u16 flags = ntoh16(e->flags);
+ 	enum nl80211_key_type key_type;
+ 
++	/*
++	 * cfgdev_to_wlc_ndev() dereferences cfgdev (a wireless_dev *)
++	 * internally via the wdev_to_ndev()/wdev->netdev macro expansion
++	 * *before* ndev is ever assigned. If cfgdev is NULL (stale event
++	 * delivered after the interface was torn down), that dereference
++	 * itself crashes the kernel -- checking ndev afterwards is too
++	 * late. Guard cfgdev up front instead.
++	 */
++	if (unlikely(!cfgdev)) {
++		WL_ERR(("wl_notify_mic_status: cfgdev is NULL, dropping stale event\n"));
++		return 0;
++	}
++
+ 	ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
+ 
+ 	mutex_lock(&cfg->usr_sync);
+@@ -11311,6 +11324,23 @@
+ 
+ 	WL_ERR((">>> PNO Event\n"));
+ 
++	/*
++	 * cfgdev_to_wlc_ndev() can legitimately be handed a NULL cfgdev
++	 * (wireless_dev *) if the net_device backing it has already been
++	 * torn down (e.g. Wi-Fi disabled / interface removed) while a
++	 * PFN/PNO "network found" event from firmware is still in flight.
++	 *
++	 * Note: cfgdev_to_wlc_ndev() is a macro that expands to
++	 * wdev_to_ndev(cfgdev), i.e. cfgdev->netdev -- it dereferences
++	 * cfgdev directly, before ndev is ever assigned. A NULL check on
++	 * ndev *after* this call is too late; the crash happens inside
++	 * the macro itself. Guard cfgdev up front instead.
++	 */
++	if (unlikely(!cfgdev)) {
++		WL_ERR(("wl_notify_pfn_status: cfgdev is NULL, dropping stale PNO event\n"));
++		return 0;
++	}
++
+ 	ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
+ 
+ 

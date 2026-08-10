@@ -170,41 +170,6 @@ run_evolution() {
 }
 
 # ------------------------------------------------------------------------------
-# Variant: DerpFest
-# ------------------------------------------------------------------------------
-run_derpfest() {
-    common_prep
-    rm -rf .repo/local_manifests vendor/lineage
-    repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --git-lfs --depth 1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-   # source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    sed -i '/^LOCAL_PATH := vendor\/overlay\/fonts$/,/^    FontGoogleSansFlexRegularOverlay$/d' vendor/overlay/overlays.mk
-    sed -i '\|include vendor/fontage/config.mk|d' vendor/lineage/config/derpfest.mk
-    sed -i '/Chrome\/Chrome\.apk\.gz/d;/TrichromeLibrary\/TrichromeLibrary\.apk\.gz/d' vendor/gms/common/common-vendor.mk
-    . build/envsetup.sh
-
-    export TARGET_INCLUDE_BCR=false
-    common_env_exports
-
-    local lunch_devices=(${ROM_DEVICES[derpfest]})
-    if [ "$DEVICE" != "all" ]; then
-        lunch_devices=("$DEVICE")
-    fi
-
-    echo "▶ derpfest: building device(s): ${lunch_devices[*]}"
-    for dev in "${lunch_devices[@]}"; do
-        echo "▶ derpfest: lunch lineage_${dev}-bp4a-user"
-        lunch "lineage_${dev}-bp4a-user"
-        m installclean
-        mka derp
-    done
-
-    run_upload_derpfest
-}
-
-# ------------------------------------------------------------------------------
 # Variant: crDroid (built on the AxionAOSP/lineage-23.2 source tree, with
 # crDroid's feature-flag overlay files layered on top — same overlay paths
 # crDroid's own docs use when adding cr_config.xml onto a non-crDroid tree)

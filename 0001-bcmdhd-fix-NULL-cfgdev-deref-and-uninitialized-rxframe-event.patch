@@ -1,17 +1,9 @@
---- a/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c	2026-08-10 21:17:29.865933256 +0000
-+++ b/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c	2026-08-10 21:17:30.041933266 +0000
-@@ -11269,6 +11269,19 @@
+--- a/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c
++++ b/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c
+@@ -11269,6 +11269,11 @@
  	u16 flags = ntoh16(e->flags);
  	enum nl80211_key_type key_type;
  
-+	/*
-+	 * cfgdev_to_wlc_ndev() dereferences cfgdev (a wireless_dev *)
-+	 * internally via the wdev_to_ndev()/wdev->netdev macro expansion
-+	 * *before* ndev is ever assigned. If cfgdev is NULL (stale event
-+	 * delivered after the interface was torn down), that dereference
-+	 * itself crashes the kernel -- checking ndev afterwards is too
-+	 * late. Guard cfgdev up front instead.
-+	 */
 +	if (unlikely(!cfgdev)) {
 +		WL_ERR(("wl_notify_mic_status: cfgdev is NULL, dropping stale event\n"));
 +		return 0;
@@ -20,22 +12,10 @@
  	ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
  
  	mutex_lock(&cfg->usr_sync);
-@@ -11311,6 +11324,23 @@
+@@ -11311,6 +11316,11 @@
  
  	WL_ERR((">>> PNO Event\n"));
  
-+	/*
-+	 * cfgdev_to_wlc_ndev() can legitimately be handed a NULL cfgdev
-+	 * (wireless_dev *) if the net_device backing it has already been
-+	 * torn down (e.g. Wi-Fi disabled / interface removed) while a
-+	 * PFN/PNO "network found" event from firmware is still in flight.
-+	 *
-+	 * Note: cfgdev_to_wlc_ndev() is a macro that expands to
-+	 * wdev_to_ndev(cfgdev), i.e. cfgdev->netdev -- it dereferences
-+	 * cfgdev directly, before ndev is ever assigned. A NULL check on
-+	 * ndev *after* this call is too late; the crash happens inside
-+	 * the macro itself. Guard cfgdev up front instead.
-+	 */
 +	if (unlikely(!cfgdev)) {
 +		WL_ERR(("wl_notify_pfn_status: cfgdev is NULL, dropping stale PNO event\n"));
 +		return 0;
@@ -44,40 +24,33 @@
  	ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
  
  
-@@ -11676,18 +11706,33 @@
- 	wifi_p2p_pub_act_frame_t *act_frm = NULL;
- 	wifi_p2p_action_frame_t *p2p_act_frm = NULL;
- 	wifi_p2psd_gas_pub_act_frame_t *sd_act_frm = NULL;
--	wl_event_rx_frame_data_t *rxframe;
-+	wl_event_rx_frame_data_t *rxframe = (wl_event_rx_frame_data_t *)data;
+@@ -11679,15 +11689,23 @@
+ 	wl_event_rx_frame_data_t *rxframe;
  	u32 event;
  	u8 *mgmt_frame;
- 	u8 bsscfgidx = e->bsscfgidx;
- 	u32 mgmt_frame_len = ntoh32(e->datalen);
+-	u8 bsscfgidx = e->bsscfgidx;
+-	u32 mgmt_frame_len = ntoh32(e->datalen);
 -	u16 channel = ((ntoh16(rxframe->channel) & WL_CHANSPEC_CHAN_MASK));
++	u8 bsscfgidx;
++	u32 mgmt_frame_len;
 +	u16 channel;
-+
-+	/*
-+	 * `rxframe` and `event` were previously used/read before being
-+	 * assigned: `rxframe` was dereferenced (rxframe->channel) on its
-+	 * declaration line, and `event` was read further down, both while
-+	 * still holding whatever garbage was on the stack. Depending on
-+	 * that garbage, rxframe->channel could dereference a wild/near-NULL
-+	 * pointer and crash (Unable to handle kernel NULL pointer
-+	 * dereference at virtual address 0x2, PC at
-+	 * wl_notify_rx_mgmt_frame). Initialize both up front from the
-+	 * actual event data, and validate rxframe/mgmt_frame_len before
-+	 * touching rxframe->channel at all.
-+	 */
-+	event = ntoh32(e->event_type);
  
 -	if (mgmt_frame_len < sizeof(wl_event_rx_frame_data_t)) {
-+	if (!rxframe || mgmt_frame_len < sizeof(wl_event_rx_frame_data_t)) {
- 		WL_ERR(("wrong datalen:%d\n", mgmt_frame_len));
+-		WL_ERR(("wrong datalen:%d\n", mgmt_frame_len));
++	if (ntoh32(e->datalen) < sizeof(wl_event_rx_frame_data_t)) {
++		WL_ERR(("wrong datalen:%d\n", ntoh32(e->datalen)));
++		return -EINVAL;
++	}
++	mgmt_frame_len = ntoh32(e->datalen) - sizeof(wl_event_rx_frame_data_t);
++	event = ntoh32(e->event_type);
++	bsscfgidx = e->bsscfgidx;
++	rxframe = (wl_event_rx_frame_data_t *)data;
++	if (!rxframe) {
++		WL_ERR(("rxframe: NULL\n"));
  		return -EINVAL;
  	}
- 	mgmt_frame_len -= sizeof(wl_event_rx_frame_data_t);
-+	channel = ((ntoh16(rxframe->channel) & WL_CHANSPEC_CHAN_MASK));
+-	mgmt_frame_len -= sizeof(wl_event_rx_frame_data_t);
++	channel = (ntoh16(rxframe->channel) & WL_CHANSPEC_CHAN_MASK);
  
  	memset(&bssid, 0, ETHER_ADDR_LEN);
  

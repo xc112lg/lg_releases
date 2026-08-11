@@ -159,9 +159,9 @@ run_evolution() {
         devices=("$DEVICE")
     fi
 
-    echo "▶ crdroid: building device(s): ${devices[*]}"
+    #echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
-        echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
+        #echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
         lunch "lineage_${dev}-bp1a-user"
         make installclean
         m evolution
@@ -198,9 +198,9 @@ curl -sL https://github.com/xc112lg/android_device_lge_g6-common/commit/89433a83
         devices=("$DEVICE")
     fi
 
-    echo "▶ crdroid: building device(s): ${devices[*]}"
+   # echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
-        echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
+        #echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
         lunch "lineage_${dev}-bp1a-user"
         make installclean
         m bacon
@@ -743,7 +743,7 @@ if [ "$MODE" = "upload" ]; then
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
-    echo "▶ Starting blossom build: $TARGET"
+    #echo "▶ Starting blossom build: $TARGET"
     case "$TARGET" in
         evolution) run_evolution ;;
         lineage)   run_lineage ;;
@@ -752,5 +752,5 @@ else
         crdroid)   run_crdroid ;;
         derpfest)  run_derpfest ;;
     esac
-    echo "✓ Finished blossom build: $TARGET"
+   # echo "✓ Finished blossom build: $TARGET"
 fi

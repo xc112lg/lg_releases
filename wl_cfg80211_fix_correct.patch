@@ -1,0 +1,37 @@
+diff --git a/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c b/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c
+--- a/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c
++++ b/drivers/net/wireless/bcmdhd/src/wl/sys/wl_cfg80211.c
+@@ -11673,14 +11673,26 @@ wl_notify_rx_mgmt_frame(struct bcm_cfg80211 *cfg, bcm_struct_cfgdev *cfgdev,
+ 	wifi_p2psd_gas_pub_act_frame_t *sd_act_frm = NULL;
+ 	wl_event_rx_frame_data_t *rxframe;
+ 	u32 event;
+ 	u8 *mgmt_frame;
+-	u8 bsscfgidx = e->bsscfgidx;
+-	u32 mgmt_frame_len = ntoh32(e->datalen);
+-	u16 channel = ((ntoh16(rxframe->channel) & WL_CHANSPEC_CHAN_MASK));
++	u8 bsscfgidx;
++	u32 mgmt_frame_len;
++	u16 channel;
++
++	if (!data) {
++		WL_ERR(("rxframe: NULL\n"));
++		return -EINVAL;
++	}
++
++	rxframe = (wl_event_rx_frame_data_t *)data;
++	event = ntoh32(e->event_type);
++	bsscfgidx = e->bsscfgidx;
++
++	mgmt_frame_len = ntoh32(e->datalen);
++	if (mgmt_frame_len < sizeof(wl_event_rx_frame_data_t)) {
++		WL_ERR(("wrong datalen:%d\n", mgmt_frame_len));
++		return -EINVAL;
++	}
++
++	channel = ntoh16(rxframe->channel) & WL_CHANSPEC_CHAN_MASK;
+
+-	if (mgmt_frame_len < sizeof(wl_event_rx_frame_data_t)) {
+-		WL_ERR(("wrong datalen:%d\n", mgmt_frame_len));
+-		return -EINVAL;
+-	}
+ 	mgmt_frame_len -= sizeof(wl_event_rx_frame_data_t);

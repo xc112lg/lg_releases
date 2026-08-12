@@ -433,6 +433,13 @@ TEMPLATE
             label="🔧 Recovery"
         fi
         download_links="<a href=\"${url}\">Download</a>"
+    elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"boot"* ]]; then
+        if [ -n "$device_code" ]; then
+            label="🔧 ${device_code} boot"
+        else
+            label="🔧 boot"
+        fi
+        download_links="<a href=\"${url}\">Download</a>"
     elif [[ "$filename" == *.zip ]]; then
         if [ -n "$device_code" ]; then
             label="📦 ${device_code} ROM"

@@ -636,25 +636,6 @@ July security patch
 Default Kernel Sashimi"
 }
 
-run_upload_derpfest() {
-    stage_artifacts
-    release_and_notify \
-        "lgderp" \
-        "https://avatars.githubusercontent.com/u/95412874?s=200&v=4" \
-        "DerpFest 16.2" \
-        "DerpFest" \
-        "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-July security patch
-Default Kernel Sashimi"
-}
 
 run_upload_crdroid() {
     stage_artifacts
@@ -663,64 +644,6 @@ run_upload_crdroid() {
         "https://avatars.githubusercontent.com/u/9610671?s=200&v=4" \
         "crDroid" \
         "crDroid" \
-        "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-July security patch
-Default Kernel Sashimi"
-}
-
-run_upload_lineage() {
-    stage_artifacts
-    release_and_notify \
-        "lglineage" \
-        "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
-        "Lineage-23.2" \
-        "lineage-23.2" \
-        "NFC not working
-Cant change to stock kernel" \
-        "NFC wont spawn on non NFC variant" \
-        "Debloated
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-July security patch
-Default Kernel Sashimi"
-}
-
-run_upload_lunaris() {
-    stage_artifacts
-    release_and_notify \
-        "lgLunarisAOSP" \
-        "https://avatars.githubusercontent.com/u/193316573?s=200&v=4" \
-        "LunarisAOSP 16.2" \
-        "LunarisAOSP" \
-        "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-July security patch
-Default Kernel Sashimi"
-}
-
-run_upload_axion() {
-    stage_artifacts
-    release_and_notify \
-        "lgAxionAOSP" \
-        "https://avatars.githubusercontent.com/u/197447202?s=200&v=4" \
-        "AxionAOSP" \
-        "AxionAOSP" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \

@@ -466,6 +466,8 @@ TEMPLATE
         BBCODE_ROM+=("[*][B]📱 ${bbcode_dev_label} Vanilla ROM[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
     elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
         BBCODE_RECOVERY+=("[*][B]🔧 ${bbcode_dev_label} Recovery Image[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
+    elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"Boot"* ]]; then
+        BBCODE_RECOVERY+=("[*][B]🔧 ${bbcode_dev_label} Boot Image[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
     elif [[ "$filename" == *.zip ]]; then
         BBCODE_ROM+=("[*][B]📦 ${bbcode_dev_label} ROM[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
     elif [[ "$filename" == *.img ]]; then

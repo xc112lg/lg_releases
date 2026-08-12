@@ -51,12 +51,12 @@ RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 declare -A ROM_DEVICES=(
     [lunaris]="h872 h870 us997 h873 h870d"
     [lineage]="h872 h870 us997 h873 h870d"
-   # [evolution]="h872 h870 us997 h873 h870d"
+    [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
     [crdroid]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
-    [evolution]="h870"
+    #[evolution]="h870"
 )
 
 usage() {

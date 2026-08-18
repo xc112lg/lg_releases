@@ -31,7 +31,7 @@ EOF
 
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
-
+cat build/soong/scripts/gen_build_prop.py
 curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/init.qcom.usb.rc.patch | patch -d device/lge/msm8996-common -p0
 [ "$(sha1sum vendor/lge/g6-common/proprietary/vendor/lib/libmmcamera2_stats_modules.so 2>/dev/null | cut -d' ' -f1)" = "c2d54db2750abfa19c4f6078fd715f5f58788e9d" ] && echo "already patched, skipping" || curl -sL https://github.com/xc112lg/lg_releases/raw/refs/heads/main/libmmcamera2_stats_modules.so -o vendor/lge/g6-common/proprietary/vendor/lib/libmmcamera2_stats_modules.so
 #curl -sL https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/0001-battery-config-override-fixed.patch  | patch -d device/lge/g6-common -p1

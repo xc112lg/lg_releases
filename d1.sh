@@ -189,7 +189,7 @@ run_crdroid() {
 
     
    
-curl -sL https://github.com/xc112lg/android_device_lge_g6-common/commit/89433a836be4dbc067d75ab631604039718322c3.patch -o /tmp/fp-null-guard.patch && (git -C device/lge/g6-common apply -R --check /tmp/fp-null-guard.patch 2>/dev/null && echo "already applied, skipping" || git -C device/lge/g6-common am /tmp/fp-null-guard.patch)
+#curl -sL https://github.com/xc112lg/android_device_lge_g6-common/commit/89433a836be4dbc067d75ab631604039718322c3.patch -o /tmp/fp-null-guard.patch && (git -C device/lge/g6-common apply -R --check /tmp/fp-null-guard.patch 2>/dev/null && echo "already applied, skipping" || git -C device/lge/g6-common am /tmp/fp-null-guard.patch)
     . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})

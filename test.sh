@@ -114,7 +114,7 @@ load_env() {
     elif [ -f ../.env ]; then
         export $(cat ../.env | grep -v '#' | xargs)
     else
-        exit 1
+        echo no env 
     fi
 }
 

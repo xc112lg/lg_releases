@@ -161,7 +161,7 @@ run_evolution() {
     #echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
         #echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
-        lunch "lineage_${dev}-bp1a-user"
+        lunch "lineage_${dev}-bp1a-userdebug"
         make installclean
         m recoveryimage
     done

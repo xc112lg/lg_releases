@@ -493,7 +493,7 @@ DOWNLOADS_SECTION+="
 
     echo "✓ XDA BBCode saved to ${BBCODE_FILE}"
     echo "-------------------- XDA BBCode --------------------"
-    cat "$BBCODE_FILE"
+    #cat "$BBCODE_FILE"
     echo "------------------------------------------------------"
 
     # Send the same BBCode as its own separate Telegram message (plain text —

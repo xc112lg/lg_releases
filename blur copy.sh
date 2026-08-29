@@ -23,58 +23,6 @@ sed -i \
 
 
 # Directory structure
-mkdir -p device/lge/msm8996-common/rro_overlays/LauncherOverlayMsm8996/res/values
-
-# Android.bp
-cat > device/lge/msm8996-common/rro_overlays/LauncherOverlayMsm8996/Android.bp << 'EOF'
-runtime_resource_overlay {
-    name: "LauncherOverlayMsm8996",
-    sdk_version: "current",
-    vendor: true,
-}
-EOF
-
-# AndroidManifest.xml
-cat > device/lge/msm8996-common/rro_overlays/LauncherOverlayMsm8996/AndroidManifest.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2025 PixelOS
-     Copyright (C) 2025 LineageOS
-     SPDX-License-Identifier: Apache-2.0
--->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.launcher.overlay.msm8996">
-
-    <overlay
-        android:isStatic="true"
-        android:priority="1"
-        android:targetPackage="com.android.launcher3" />
-</manifest>
-EOF
-
-# res/values/config.xml
-cat > device/lge/msm8996-common/rro_overlays/LauncherOverlayMsm8996/res/values/config.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2018 The Android Open Source Project
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-        http://www.apache.org/licenses/LICENSE-2.0
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-<resources>
-    <dimen name="max_depth_blur_radius_enhanced">20dp</dimen>
-</resources>
-EOF
-
-# Register in msm8996.mk
-sed -i '/^    WifiOverlay \\$/a\    LauncherOverlayMsm8996 \\' device/lge/msm8996-common/msm8996.mk
-
-# Directory structure
 mkdir -p device/lge/msm8996-common/rro_overlays/SystemUIOverlayMsm8996/res/values
 
 # Android.bp

@@ -5,7 +5,6 @@
 
  if ! grep -qe "Failing repos\|uncommitted changes are present" /tmp/output.txt ; then
          echo "All repositories synchronized successfully."
-         exit 0
     else
         rm -f deleted_repositories.txt
     fi

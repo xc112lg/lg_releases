@@ -1,10 +1,21 @@
+#!/bin/bash
+# Copyright (c) 2016-2026 Crave.io Inc. All rights reserved
 
+repo --version
+cd .repo/repo
+git pull -r
+cd -
+repo --version
+
+
+main() {
     # Run repo sync command and capture the output
     find .repo -name '*.lock' -delete
-    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch 2>&1 | tee /tmp/output.txt
+    repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch 2>&1 | tee /tmp/output.txt
 
  if ! grep -qe "Failing repos\|uncommitted changes are present" /tmp/output.txt ; then
          echo "All repositories synchronized successfully."
+         return 0
     else
         rm -f deleted_repositories.txt
     fi
@@ -47,7 +58,7 @@
     # Re-sync all repositories after deletion
     echo "Re-syncing all repositories..."
     find .repo -name '*.lock' -delete
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
+    repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
+}
 
-
-
+main $*

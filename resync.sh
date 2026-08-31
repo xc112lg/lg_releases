@@ -10,7 +10,7 @@ repo --version
 
 main() {
     # Run repo sync command and capture the output
-    find .repo -name '*.lock' -delete
+    #find .repo -name '*.lock' -delete
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch 2>&1 | tee /tmp/output.txt
 
  if ! grep -qe "Failing repos\|uncommitted changes are present" /tmp/output.txt ; then

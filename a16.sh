@@ -205,6 +205,17 @@ run_crdroid() {
 
         sed -i 's/vendor\.usb\.rndis\.func\.name=rnsis_bam/vendor.usb.rndis.func.name=rndis_bam \\/' device/lge/msm8996-common/vendor_prop.mk
         sed -i '/vendor\.usb\.rndis\.func\.name=rndis_bam \\/a\    persist.vendor.usb.config.extra=none' device/lge/msm8996-common/vendor_prop.mk
+
+        cat >> device/lge/msm8996-common/vendor_prop.mk << 'EOF'
+
+# Enable blurs, hidden under dev option
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.sf.blurs_are_expensive=1 \
+    ro.surface_flinger.supports_background_blur=1 \
+    persist.sys.sf.disable_blurs=1 \
+    ro.launcher.blur.appLaunch=0 \
+    debug.renderengine.blur_algorithm=kawase2
+EOF
        . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})

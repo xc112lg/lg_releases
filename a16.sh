@@ -165,7 +165,6 @@ run_evolution() {
         /opt/crave/resync.sh
     common_env_exports
         sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
-        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh | bash
     . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[evolution]})
@@ -196,9 +195,9 @@ run_crdroid() {
        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     common_env_exports
     fixesdev
-        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/fixes.sh | bash
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework16.sh)
-        source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh)
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework16.sh | bash
+
       #  curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/init.qcom.usb.rc.patch | patch -d device/lge/msm8996-common -p0
         sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
         sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt

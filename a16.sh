@@ -139,7 +139,7 @@ common_env_exports() {
 
 fixesdev() {
 
-grep -q 'errno != EINVAL && errno != ENOSYS' bionic/libc/upstream-openbsd/android/include/arc4random.h && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/arc4random_wipeonfork1.patch | patch -p1
+#grep -q 'errno != EINVAL && errno != ENOSYS' bionic/libc/upstream-openbsd/android/include/arc4random.h && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/arc4random_wipeonfork1.patch | patch -p1
 
 
 sed -i '/# Add wlan to PRODUCT_SOONG_NAMESPACES/,/hardware\/qcom-caf\/wlan\/qcwcn/{

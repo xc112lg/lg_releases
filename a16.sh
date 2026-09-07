@@ -202,7 +202,9 @@ run_crdroid() {
       #  curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/init.qcom.usb.rc.patch | patch -d device/lge/msm8996-common -p0
         sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
         sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt
-       
+
+       sed -i 's/vendor\.usb\.rndis\.func\.name=rnsis_bam/vendor.usb.rndis.func.name=rndis_bam/' device/lge/msm8996-common/vendor_prop.mk
+       sed -i '/vendor\.usb\.rndis\.func\.name=rndis_bam/a\    persist.vendor.usb.config.extra=none \\' device/lge/msm8996-common/vendor_prop.mk
     
        . build/envsetup.sh
 

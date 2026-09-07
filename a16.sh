@@ -522,10 +522,10 @@ DOWNLOADS_SECTION+="
         echo "[/LIST]"
     } > "$BBCODE_FILE"
 
-    echo "✓ XDA BBCode saved to ${BBCODE_FILE}"
-    echo "-------------------- XDA BBCode --------------------"
-    cat "$BBCODE_FILE"
-    echo "------------------------------------------------------"
+    # echo "✓ XDA BBCode saved to ${BBCODE_FILE}"
+    # echo "-------------------- XDA BBCode --------------------"
+    # cat "$BBCODE_FILE"
+    # echo "------------------------------------------------------"
 
     # Send the same BBCode as its own separate Telegram message (plain text —
     # no parse_mode, so the [brackets] are sent as-is and not misread as HTML)

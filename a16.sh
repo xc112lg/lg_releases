@@ -226,7 +226,7 @@ EOF
    # echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
         #echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
-        lunch "lineage_${dev}-bp4a-user"
+        lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m bacon
     done

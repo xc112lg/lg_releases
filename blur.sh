@@ -17,8 +17,8 @@ sed -i \
   -e '/<path name="headphones-hifi-dacdop-aux">/a\        <ctl name="Es9218 Bypass" value="0" />' \
   device/lge/g6-common/audio/mixer_paths_tasha.xml
 
-  sed -i '/<\/resources>/i\
-\    <!-- Blur radius behind Notification Shade -->\n    <dimen name="max_shade_window_blur_radius">17dp</dimen>\n' "device/lge/msm8996-common/overlay/frameworks/base/packages/SystemUI/res/values/config.xml"
+#   sed -i '/<\/resources>/i\
+# \    <!-- Blur radius behind Notification Shade -->\n    <dimen name="max_shade_window_blur_radius">17dp</dimen>\n' "device/lge/msm8996-common/overlay/frameworks/base/packages/SystemUI/res/values/config.xml"
 
 
 # Directory structure

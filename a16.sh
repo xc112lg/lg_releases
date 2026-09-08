@@ -215,6 +215,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.launcher.blur.appLaunch=0 \
     debug.renderengine.blur_algorithm=kawase2
 EOF
+
+cat device/lge/msm8996-common/vendor_prop.mk 
        . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})

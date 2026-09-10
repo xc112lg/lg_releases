@@ -299,7 +299,7 @@ release_and_notify() {
 
 <b>Device:</b>Blossom
 <b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
-<b>🤖 Android Version:</b> 15
+<b>🤖 Android Version:</b> 16
 <b>📅 Build Date:</b> {{BUILD_DATE}}
 
 {{DOWNLOADS_SECTION}}
@@ -510,7 +510,7 @@ done
 
 # GApps line shown once, not repeated per entry
 DOWNLOADS_SECTION+="
-🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-15/\">SourceForge</a>"
+🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
 
     # ============================================
     # XDA BBCODE OUTPUT (built from the same FILE_ENTRIES as the Telegram post,

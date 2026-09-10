@@ -151,6 +151,17 @@ endif
 
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
+
+            cat >> device/lge/msm8996-common/vendor_prop.mk << 'EOF'
+
+# Enable blurs, hidden under dev option
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.sf.blurs_are_expensive=1 \
+    ro.surface_flinger.supports_background_blur=1 \
+    persist.sys.sf.disable_blurs=1 \
+    ro.launcher.blur.appLaunch=0 \
+    debug.renderengine.blur_algorithm=kawase2
+EOF
     
 }
 
@@ -159,13 +170,16 @@ sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("
 # ------------------------------------------------------------------------------
 run_evolution() {
     common_prep
-        repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs --depth=1
-        git clone https://github.com/xc112lg/local_manifests --depth 1 -b lg .repo/local_manifests
-        repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
-        /opt/crave/resync.sh
+        repo init -u https://github.com/Evolution-X/manifest -b bka --git-lfs --depth=1
+         git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
+         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     common_env_exports
+    fixesdev
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
         sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
     . build/envsetup.sh
+
+
 
     local devices=(${ROM_DEVICES[evolution]})
     if [ "$DEVICE" != "all" ]; then
@@ -175,9 +189,9 @@ run_evolution() {
     #echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
         #echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
-        lunch "lineage_${dev}-bp1a-user"
+        lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
-        m recovery
+        m evolution
     done
 
     run_upload_evolution
@@ -207,16 +221,6 @@ run_crdroid() {
         # sed -i 's/vendor\.usb\.rndis\.func\.name=rnsis_bam/vendor.usb.rndis.func.name=rndis_bam \\/' device/lge/msm8996-common/vendor_prop.mk
         # sed -i '/vendor\.usb\.rndis\.func\.name=rndis_bam \\/a\    persist.vendor.usb.config.extra=none' device/lge/msm8996-common/vendor_prop.mk
 
-        cat >> device/lge/msm8996-common/vendor_prop.mk << 'EOF'
-
-# Enable blurs, hidden under dev option
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.blurs_are_expensive=1 \
-    ro.surface_flinger.supports_background_blur=1 \
-    persist.sys.sf.disable_blurs=1 \
-    ro.launcher.blur.appLaunch=0 \
-    debug.renderengine.blur_algorithm=kawase2
-EOF
 
      . build/envsetup.sh
 

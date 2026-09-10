@@ -242,6 +242,26 @@ run_crdroid() {
 
 
 # ------------------------------------------------------------------------------
+# Read (never set) the security patch date baked into the freshly built image.
+# Pulled straight from out/target/product/*/system/build.prop, formatted as
+# "Month Year" (e.g. "August 2026"); falls back to the raw value if `date`
+# can't parse it, or "Unknown" if build.prop / the prop isn't found.
+# ------------------------------------------------------------------------------
+get_security_patch() {
+    local raw
+    raw=$(strings out/target/product/*/system/build.prop 2>/dev/null \
+        | grep -m1 '^ro\.build\.version\.security_patch=' \
+        | cut -d= -f2)
+
+    if [ -z "$raw" ]; then
+        echo "Unknown"
+        return
+    fi
+
+    date -d "$raw" '+%B %Y' 2>/dev/null || echo "$raw"
+}
+
+# ------------------------------------------------------------------------------
 # Stage 1 (equivalent of upevo.sh): clone the target repo and copy build output
 # into it. Sets STAGE_DIR to the directory to cd into for stage 2.
 # ------------------------------------------------------------------------------
@@ -268,6 +288,13 @@ stage_artifacts() {
         device=$(basename "$(dirname "$img")")
         cp "$img" "$repo/${device}_boot.img"
     done
+
+    # Global on purpose (no 'local') — read now while out/ is still relative
+    # to the source root, before we cd into $repo below. release_and_notify
+    # uses this to fill in {{SECURITY_PATCH}}.
+    SECURITY_PATCH="$(get_security_patch)"
+    echo "✓ Detected security patch: $SECURITY_PATCH"
+
     cd "$repo"
 
     # lineage's upevo.sh drops the stock recovery/OTA package before uploading
@@ -307,10 +334,11 @@ release_and_notify() {
 <b>📝 Notes:</b>
 • Work with both core and basic gapps
 • Signed
-• July security patch
+• {{SECURITY_PATCH}} security patch
 • Default Kernel Swan
 
 <b>❤️ Credits & Thanks:</b>
+• @Inkypen for bringing it up to make it work on android16
 • npjohnson
 • lineageOS dev team
 • ROMSG for kernel
@@ -329,6 +357,7 @@ TEMPLATE
     telegram_message="${telegram_message//\{\{ISSUES\}\}/$issues}"
     telegram_message="${telegram_message//\{\{FIXES\}\}/$fixes}"
     telegram_message="${telegram_message//\{\{NOTES\}\}/$notes}"
+    telegram_message="${telegram_message//\{\{SECURITY_PATCH\}\}/${SECURITY_PATCH:-Unknown}}"
 
     export LC_ALL=en_US.UTF-8
     export LANG=en_US.UTF-8

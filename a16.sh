@@ -192,9 +192,11 @@ run_crdroid() {
     common_prep
        repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth=1 
        git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
+       cd frameworks/base;git reset --hard 71eec03e;cd -
        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     common_env_exports
     fixesdev
+        grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/xc112lg/android_frameworks_base-1/commit/ecd640244cdd757dbfc040a8cd04f0934d10c8c4.patch | git -C frameworks/base am
         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/crdframework16.sh | bash
 

@@ -1,1 +1,1 @@
-curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/a16.sh | bash -s crdroid
+curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/a16.sh | bash -s crdroid upload

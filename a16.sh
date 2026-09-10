@@ -293,7 +293,6 @@ stage_artifacts() {
     # to the source root, before we cd into $repo below. release_and_notify
     # uses this to fill in {{SECURITY_PATCH}}.
     SECURITY_PATCH="$(get_security_patch)"
-    echo "✓ Detected security patch: $SECURITY_PATCH"
 
     cd "$repo"
 

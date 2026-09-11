@@ -177,6 +177,11 @@ run_evolution() {
     fixesdev
         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
         sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/lge/msm8996-common/msm8996.mk
+       sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
+    sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
+   
     . build/envsetup.sh
 
 

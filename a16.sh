@@ -289,10 +289,10 @@ stage_artifacts() {
         cp "$img" "$repo/${device}_recovery.img"
     done
     
-    for img in out/target/product/*/boot.img; do
-        device=$(basename "$(dirname "$img")")
-        cp "$img" "$repo/${device}_boot.img"
-    done
+    # for img in out/target/product/*/boot.img; do
+    #     device=$(basename "$(dirname "$img")")
+    #     cp "$img" "$repo/${device}_boot.img"
+    # done
 
     # Global on purpose (no 'local') — read now while out/ is still relative
     # to the source root, before we cd into $repo below. release_and_notify

@@ -483,9 +483,9 @@ TEMPLATE
 
     if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
         if [ -n "$device_code" ]; then
-            label="📱 ${device_code} Vanilla ROM"
+            label="📱 ${device_code} Vanilla"
         else
-            label="📱 Vanilla ROM"
+            label="📱 Vanilla"
         fi
         download_links="<a href=\"${url}\">GitHub</a>"
     elif [[ "$filename" == *"GApps"* ]] || [[ "$filename" == *"gapps"* ]]; then
@@ -497,28 +497,28 @@ TEMPLATE
         else
             label="🔧 Recovery"
         fi
-        download_links="<a href=\"${url}\">Download</a>"
+        download_links="<a href=\"${url}\">GitHub</a>"
     elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"boot"* ]]; then
         if [ -n "$device_code" ]; then
             label="🔧 ${device_code} boot"
         else
             label="🔧 boot"
         fi
-        download_links="<a href=\"${url}\">Download</a>"
+        download_links="<a href=\"${url}\">GitHub</a>"
     elif [[ "$filename" == *.zip ]]; then
         if [ -n "$device_code" ]; then
             label="📦 ${device_code} ROM"
         else
             label="📦 ROM"
         fi
-        download_links="<a href=\"${url}\">Download</a>"
+        download_links="<a href=\"${url}\">GitHub</a>"
     elif [[ "$filename" == *.img ]]; then
         if [ -n "$device_code" ]; then
             label="💾 ${device_code} Image File"
         else
             label="💾 Image File"
         fi
-        download_links="<a href=\"${url}\">Download</a>"
+        download_links="<a href=\"${url}\">GitHub</a>"
     fi
 
     # Only show label and links, NO original full filename anywhere

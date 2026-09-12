@@ -197,6 +197,10 @@ run_evolution() {
         lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m evolution
+        if [ $? -ne 0 ]; then
+            echo "✗ Build failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
     done
 
     run_upload_evolution
@@ -240,6 +244,10 @@ run_crdroid() {
         lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m bacon
+        if [ $? -ne 0 ]; then
+            echo "✗ Build failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
     done
 
     run_upload_crdroid

@@ -686,7 +686,7 @@ run_upload_evolution() {
     release_and_notify \
         "lgevo" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
-        "EvolutionX-15.0" \
+        "EvolutionX-16.0" \
         "Evolution-X" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant

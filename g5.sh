@@ -51,12 +51,12 @@ RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 declare -A ROM_DEVICES=(
     [lunaris]="h872 h870 us997 h873 h870d"
     [lineage]="h872 h870 us997 h873 h870d"
-   [evolution]="h872 h870 us997 h873 h870d"
+   # [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
     [crdroid]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
-  # [evolution]="h830 h850"
+   [evolution]="h830 h850"
 )
 
 usage() {
@@ -475,7 +475,7 @@ TEMPLATE
         local size="${remaining##*|}"
 
 # Known device codenames to detect in the filename (add more as needed)
-    known_devices=( "h870d" "h870" "h871" "h872" "h873" "h930" "us997" "ls993" "vs988" "as993")
+    known_devices=( "h830" "h850" "h870d" "h870" "h871" "h872" "h873" "h930" "us997" "ls993" "vs988" "as993")
     device_code=""
     filename_lower=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
     for dev in "${known_devices[@]}"; do

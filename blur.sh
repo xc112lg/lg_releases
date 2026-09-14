@@ -3,7 +3,7 @@ KERNEL_DIR="kernel/lge/msm8996"
 if ! grep -q "stendro_+_AShiningRay_+_continued_by_xc112lg" "$KERNEL_DIR/scripts/mkcompile_h"; then
   sed -i \
     -e '/if test -z "\$KBUILD_BUILD_USER"; then/,/^fi$/c\
-LINUX_COMPILE_BY="stendro_+_AShiningRay_+_continued_by_xc112lg"' \
+LINUX_COMPILE_BY="stendro_+_AShiningRay_+_continued_by_xc112lg_+_thanks_to_inkypen"' \
     -e '/if test -z "\$KBUILD_BUILD_HOST"; then/,/^fi$/c\
 LINUX_COMPILE_HOST="crave.io"' \
     "$KERNEL_DIR/scripts/mkcompile_h"

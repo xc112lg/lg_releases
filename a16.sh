@@ -134,6 +134,8 @@ common_env_exports() {
     export TARGET_PREBUILT_BCR=false
     export TARGET_ENABLE_BLUR=false
     export AXION_MAINTAINER=xc112lg
+    export TARGET_INCLUDE_BCR=false
+    export ro.lunaris.maintainer=xc112lg
     
 }
 
@@ -264,7 +266,7 @@ run_lunaris() {
     common_env_exports
     fixesdev
         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
-
+    sed -i "\$a ro.lunaris.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
      . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[lunaris]})

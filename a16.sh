@@ -253,6 +253,40 @@ run_crdroid() {
     run_upload_crdroid
 }
 
+# ------------------------------------------------------------------------------
+# Variant: Lunaris AOSP (lineage-derived, same lunch/bacon flow as crDroid)
+# ------------------------------------------------------------------------------
+run_lunaris() {
+    common_prep
+       repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b lunaris .repo/local_manifests
+       curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    common_env_exports
+    fixesdev
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
+
+     . build/envsetup.sh
+
+    local devices=(${ROM_DEVICES[lunaris]})
+    if [ "$DEVICE" != "all" ]; then
+        devices=("$DEVICE")
+    fi
+
+   # echo "▶ lunaris: building device(s): ${devices[*]}"
+    for dev in "${devices[@]}"; do
+        #echo "▶ lunaris: lunch lineage_${dev}-bp4a-userdebug"
+        lunch "lineage_${dev}-bp4a-userdebug"
+        make installclean
+        m bacon
+        if [ $? -ne 0 ]; then
+            echo "✗ Build failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
+    done
+
+    run_upload_lunaris
+}
+
 
 # ------------------------------------------------------------------------------
 # Read (never set) the security patch date baked into the freshly built image.
@@ -696,6 +730,27 @@ run_upload_evolution() {
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
         "EvolutionX-16.0" \
         "Evolution-X" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+July security patch
+Default Kernel Sashimi"
+}
+
+
+run_upload_lunaris() {
+    stage_artifacts
+    release_and_notify \
+        "lglunaris" \
+        "https://avatars.githubusercontent.com/u/193316573?s=200&v=4" \
+        "Lunaris AOSP" \
+        "LunarisAOSP" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \

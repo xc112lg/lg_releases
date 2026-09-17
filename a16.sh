@@ -428,15 +428,15 @@ TEMPLATE
         echo "Already authenticated with GitHub."
     fi
 
-    local version="${custom_version:-$version_default}"
+    local base_version="${custom_version:-$version_default}"
+    local version="$base_version"
+    local suffix=1
 
-    if gh release view "$version" &> /dev/null; then
-        echo "Deleting existing tag and releases for $version..."
-        gh release delete "$version" --yes >/dev/null 2>&1 || true
-        git tag -d "$version" >/dev/null 2>&1 || true
-        git push origin --delete "$version" >/dev/null 2>&1 || true
-        echo "Existing tag and releases deleted."
-    fi
+    while gh release view "$version" &> /dev/null; do
+        suffix=$((suffix + 1))
+        version="${base_version}-${suffix}"
+        echo "Tag $base_version already exists, trying $version instead..."
+    done
 
     git tag -a "$version" -m "Release $version"
     git push origin "$version" --force -q >/dev/null 2>&1

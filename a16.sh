@@ -262,7 +262,7 @@ run_crdroid() {
 run_lunaris() {
     common_prep
        repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
-       git clone https://github.com/xc112lg/local_manifests --depth 1 -b lunaris .repo/local_manifests
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     common_env_exports
     fixesdev

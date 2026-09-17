@@ -165,6 +165,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.launcher.blur.appLaunch=0 \
     debug.renderengine.blur_algorithm=kawase2
 EOF
+
+sed -i '/<\/resources>/i\
+\
+    <!-- Default for Settings.Global.DISABLE_WINDOW_BLURS -->\
+    <integer name="def_disable_window_blurs">1</integer>' device/lge/msm8996-common/overlay-lineage/lineage-sdk/packages/LineageSettingsProvider/res/values/defaults.xml
     
 }
 

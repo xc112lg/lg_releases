@@ -277,7 +277,7 @@ run_lunaris() {
 
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.lunaris.maintainer=xc112lg | How's Your Day"
+    ro.lunaris.maintainer=xc112lg
 EOF
 
 cat device/lge/msm8996-common/vendor_prop.mk

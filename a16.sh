@@ -272,7 +272,16 @@ run_lunaris() {
     common_env_exports
     fixesdev
         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
-    sed -i "\$a ro.lunaris.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
+
+   cat >> device/lge/msm8996-common/vendor_prop.mk << 'EOF'
+
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.lunaris.maintainer=xc112lg | How's Your Day"
+EOF
+
+cat device/lge/msm8996-common/vendor_prop.mk
+    
     grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
      . build/envsetup.sh
 

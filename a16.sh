@@ -49,15 +49,15 @@ RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 # Every ROM builds one or more sub-devices in a single pass; DEVICE selects
 # among a given ROM's list (see the run_* functions below).
 declare -A ROM_DEVICES=(
-   # [lunaris]="h872 h870 us997 h873 h870d"
+   [lunaris]="h872 h870 us997 h873 h870d"
     [lineage]="h872 h870 us997 h873 h870d"
-   # [evolution]="h872 h870 us997 h873 h870d"
+   [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
     [crdroid]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
-     [lunaris]="h830 h850"
-   [evolution]="h830 h850"
+    # [lunaris]="h830 h850"
+  # [evolution]="h830 h850"
 )
 
 usage() {

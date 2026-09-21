@@ -56,7 +56,7 @@ declare -A ROM_DEVICES=(
     [axion]="h872 h870 us997 h873 h870d"
     [crdroid]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
-     [lunaris]="h830 h850"
+     [lunaris]="h850"
   # [evolution]="h830 h850"
 )
 

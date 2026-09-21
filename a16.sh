@@ -280,6 +280,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.lunaris.maintainer=xc112lg
 EOF
 
+sed -i '\|vendor/extras/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/config.mk
+sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/config.mk
+
     
     grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
      . build/envsetup.sh

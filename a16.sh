@@ -123,7 +123,7 @@ common_prep() {
     load_env
 rm -rf .repo/local_manifests/
 rm -rf device/lge vendor/lineage-priv/keys
-rm -rf vendor/lge/ kernel/lge/msm8996
+rm -rf vendor/lge/ kernel/lge/msm8996 vendor/extras
 rm -rf hardware/qcom-caf
 }
 

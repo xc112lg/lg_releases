@@ -63,7 +63,7 @@ main() {
     # Re-sync all repositories after deletion
     echo "Re-syncing all repositories..."
     find .repo -name '*.lock' -delete
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
+    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch --force-remove-dirty
 }
 
 main $*

@@ -109,17 +109,32 @@ fi
 # ------------------------------------------------------------------------------
 # Shared setup (identical across all three variants)
 # ------------------------------------------------------------------------------
+
+# Configure git to authenticate against github.com via a request header
+# instead of embedding the token in the URL. URL-embedded tokens get stripped
+# by git on GitHub's redirect (https://github.com/... -> https://github.com/.../),
+# which is why we were getting "Username for 'https://github.com':" prompts.
+# The header survives redirects and applies to every git/repo operation.
+setup_git_auth() {
+    [ -z "${GH_TOKEN:-}" ] && return
+    git config --global --unset-all url."https://github.com/".insteadOf 2>/dev/null || true
+    git config --global --unset-all url."https://${GH_TOKEN}@github.com/".insteadOf 2>/dev/null || true
+    git config --global --unset-all http.https://github.com/.extraHeader 2>/dev/null || true
+    git config --global http.https://github.com/.extraHeader \
+        "Authorization: Basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64)"
+}
+
 load_env() {
     if [ -f .env ]; then
         export $(cat .env | grep -v '#' | xargs)
     elif [ -f ../.env ]; then
         export $(cat ../.env | grep -v '#' | xargs)
     else
-        echo "missing .env"
-        exit 1
+        echo env missing
     fi
-    export GIT_TERMINAL_PROMPT=0   # fail fast instead of hanging on a credential prompt
-    [ -z "${GH_TOKEN:-}" ] && { echo "✗ GH_TOKEN is empty after loading .env"; exit 1; }
+    # Runs in both build and upload modes — ensures auth is set before any
+    # git clone / git push, even when common_prep() is skipped (upload mode).
+    setup_git_auth
 }
 
 common_prep() {
@@ -345,7 +360,7 @@ stage_artifacts() {
     fi
 
     rm -rf "$repo"
-    git clone -q "https://xc112lg:${GH_TOKEN}@github.com/xc112lg/${repo}" >/dev/null 2>&1
+    git clone -q "https://github.com/xc112lg/${repo}" >/dev/null 2>&1
 
     cp out/target/product/*/*.zip "$repo/"
 

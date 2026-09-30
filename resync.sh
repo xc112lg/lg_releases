@@ -12,8 +12,10 @@ main() {
     # Run repo sync command and capture the output
     find .repo -name '*.lock' -delete
     ls prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9
-    grep -q "android-17" .repo/manifests/default.xml && rm -rf prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 || true
+    ls prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9
+    grep -q "android-17" .repo/manifests/default.xml && rm -rf prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 || true
     ls prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9
+    ls prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch 2>&1 | tee /tmp/output.txt
 
  if ! grep -qe "Failing repos\|uncommitted changes are present" /tmp/output.txt ; then

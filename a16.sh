@@ -115,8 +115,11 @@ load_env() {
     elif [ -f ../.env ]; then
         export $(cat ../.env | grep -v '#' | xargs)
     else
-        echo env missing
+        echo "missing .env"
+        exit 1
     fi
+    export GIT_TERMINAL_PROMPT=0   # fail fast instead of hanging on a credential prompt
+    [ -z "${GH_TOKEN:-}" ] && { echo "✗ GH_TOKEN is empty after loading .env"; exit 1; }
 }
 
 common_prep() {
@@ -342,7 +345,7 @@ stage_artifacts() {
     fi
 
     rm -rf "$repo"
-    git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
+    git clone -q "https://xc112lg:${GH_TOKEN}@github.com/xc112lg/${repo}" >/dev/null 2>&1
 
     cp out/target/product/*/*.zip "$repo/"
 

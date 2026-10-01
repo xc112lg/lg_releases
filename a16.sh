@@ -313,7 +313,7 @@ EOF
    # echo "▶ lunaris: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
         #echo "▶ lunaris: lunch lineage_${dev}-bp4a-userdebug"
-        lunch "lineage_${dev}-bp4a-eng"
+        lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m bacon
         if [ $? -ne 0 ]; then

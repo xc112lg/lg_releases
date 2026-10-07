@@ -469,7 +469,7 @@ TEMPLATE
     while gh release view "$version" &> /dev/null; do
         suffix=$((suffix + 1))
         version="${base_version}-${suffix}"
-        echo "Tag $base_version already exists, trying $version instead..."
+        #echo "Tag $base_version already exists, trying $version instead..."
     done
 
     git tag -a "$version" -m "Release $version"
@@ -494,7 +494,6 @@ TEMPLATE
     # ============================================
     # TELEGRAM NOTIFICATION
     # ============================================
-    echo "Preparing to send Telegram notification..."
 
     local RELEASE_TAG="$version"
     local GITHUB_REPO="${GITHUB_REPO:-$github_repo_default}"
@@ -529,7 +528,7 @@ TEMPLATE
 
             CHANGELOG_URL=$(echo "$TELEGRAPH_RESPONSE" | jq -r '.result.url // empty')
             if [ -n "$CHANGELOG_URL" ]; then
-                echo "✓ Changelog uploaded: $CHANGELOG_URL"
+                echo "✓ Changelog uploaded: $CHANGELOG_URL"  > /dev/null
             else
                 CHANGELOG_URL="https://t.me/ProjectInfinityX/1882"
                 echo "⚠ Failed to create Telegraph page"
@@ -667,7 +666,7 @@ JSONEOF
         rm -f "$BBCODE_JSON"
 
         if echo "$BBCODE_RESPONSE" | grep -q '"ok":true'; then
-            echo "✓ XDA BBCode sent to Telegram (separate message)!"
+            #echo "✓ XDA BBCode sent to Telegram (separate message)!"  > /dev/null
         else
             echo "✗ Failed to send XDA BBCode to Telegram"
             echo "Response: $BBCODE_RESPONSE"
@@ -684,15 +683,15 @@ JSONEOF
     if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
         echo "⚠ Telegram credentials not set. Skipping Telegram notification."
     else
-        echo "Sending Telegram notification..."
+       # echo "Sending Telegram notification..."
 
         local MSG_LENGTH=${#telegram_message}
-        echo "Message length: $MSG_LENGTH characters"
+       # echo "Message length: $MSG_LENGTH characters"
         local CAPTION_LIMIT=3500
         local FALLBACK=0
 
         if [ $MSG_LENGTH -le $CAPTION_LIMIT ]; then
-            echo "✓ Message fits in caption - sending merged (image + text in one)"
+            # echo "✓ Message fits in caption - sending merged (image + text in one)"
             local TEMP_JSON
             TEMP_JSON=$(mktemp)
             cat > "$TEMP_JSON" << JSONEOF
@@ -711,7 +710,7 @@ JSONEOF
             rm -f "$TEMP_JSON"
 
             if echo "$RESPONSE" | grep -q '"ok":true'; then
-                echo "✓ Telegram notification sent successfully (merged)!"
+                #echo "✓ Telegram notification sent successfully (merged)!"
             else
                 echo "⚠ Merged send failed, trying fallback..."
                 FALLBACK=1

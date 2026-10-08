@@ -714,7 +714,7 @@ JSONEOF
             else
                 echo "⚠ Merged send failed, trying fallback..."
                 FALLBACK=1
-            fiee
+            fi
         else
             echo "⚠ Message too long for caption ($MSG_LENGTH > $CAPTION_LIMIT)"
             echo "✓ Using fallback: Sending image + text as separate messages"

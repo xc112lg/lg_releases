@@ -649,7 +649,7 @@ DOWNLOADS_SECTION+="
     # Send the same BBCode as its own separate Telegram message (plain text —
     # no parse_mode, so the [brackets] are sent as-is and not misread as HTML)
     if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
-        echo "Sending XDA BBCode as a separate Telegram message..."
+        echo "."
         local BBCODE_JSON
         BBCODE_JSON=$(mktemp)
         cat > "$BBCODE_JSON" << JSONEOF
@@ -748,7 +748,6 @@ JSONEOF
         fi
     fi
 
-    echo "✓ Release complete!"
 }
 
 # ------------------------------------------------------------------------------

@@ -709,12 +709,6 @@ JSONEOF
                 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendPhoto")
             rm -f "$TEMP_JSON"
 
-            if echo "$RESPONSE" | grep -q '"ok":true'; then
-                echo ""
-            else
-                echo "⚠ Merged send failed, trying fallback..."
-                FALLBACK=1
-            fi
         else
             echo "⚠ Message too long for caption ($MSG_LENGTH > $CAPTION_LIMIT)"
             echo "✓ Using fallback: Sending image + text as separate messages"

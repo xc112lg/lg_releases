@@ -710,11 +710,11 @@ JSONEOF
             rm -f "$TEMP_JSON"
 
             if echo "$RESPONSE" | grep -q '"ok":true'; then
-                #echo "✓ Telegram notification sent successfully (merged)!"
+                echo ""
             else
                 echo "⚠ Merged send failed, trying fallback..."
                 FALLBACK=1
-            fi
+            fiee
         else
             echo "⚠ Message too long for caption ($MSG_LENGTH > $CAPTION_LIMIT)"
             echo "✓ Using fallback: Sending image + text as separate messages"

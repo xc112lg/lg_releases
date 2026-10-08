@@ -665,12 +665,12 @@ JSONEOF
             "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage")
         rm -f "$BBCODE_JSON"
 
-        if echo "$BBCODE_RESPONSE" | grep -q '"ok":true'; then
-            #echo "✓ XDA BBCode sent to Telegram (separate message)!"  > /dev/null
-        else
-            echo "✗ Failed to send XDA BBCode to Telegram"
-            echo "Response: $BBCODE_RESPONSE"
-        fi
+        # if echo "$BBCODE_RESPONSE" | grep -q '"ok":true'; then
+        #     #echo "✓ XDA BBCode sent to Telegram (separate message)!"  > /dev/null
+        # else
+        #     echo "✗ Failed to send XDA BBCode to Telegram"
+        #     echo "Response: $BBCODE_RESPONSE"
+        # fi
     else
         echo "⚠ Telegram credentials not set. Skipping BBCode Telegram send."
     fi

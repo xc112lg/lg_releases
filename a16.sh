@@ -154,7 +154,6 @@ common_env_exports() {
     export TARGET_ENABLE_BLUR=false
     export AXION_MAINTAINER=xc112lg
     export TARGET_INCLUDE_BCR=false
-    export ro.lunaris.maintainer=xc112lg
     
 }
 

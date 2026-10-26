@@ -55,14 +55,15 @@ declare -A ROM_DEVICES=(
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
     [crdroid]="h872 h870 us997 h873 h870d"
+    [shinkai]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
  # [lunaris]="h872"
   # [evolution]="h830 h850"
 )
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload] [device]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload] [device]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|shinkai> [build|upload] [device]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|shinkai> [build|upload] [device]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -79,7 +80,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid|derpfest) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest|shinkai) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -324,6 +325,47 @@ EOF
     run_upload_lunaris
 }
 
+
+# ------------------------------------------------------------------------------
+# Variant: Shinkai AOSP (ShinkaiProject/shinkai_manifest, hekkaideka branch)
+# ------------------------------------------------------------------------------
+run_shinkai() {
+    common_prep
+       repo init -u https://github.com/ShinkaiProject/shinkai_manifest -b hekkaideka --git-lfs --depth=1
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
+       curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    common_env_exports
+    fixesdev
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
+
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/h870/lineage_h870.mk
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/h870d/lineage_h870d.mk
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/h872/lineage_h872.mk
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/h873/lineage_h873.mk
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/us997/lineage_us997.mk
+    sed -i '$a SHINKAI_MAINTAINER := "xc112lg"' device/lge/msm8996-common/BoardConfigCommon.mk
+
+    
+
+    . build/envsetup.sh
+
+    local devices=(${ROM_DEVICES[shinkai]})
+    if [ "$DEVICE" != "all" ]; then
+        devices=("$DEVICE")
+    fi
+
+    for dev in "${devices[@]}"; do
+        lunch "lineage_${dev}-bp4a-userdebug"
+        make installclean
+        m bacon
+        if [ $? -ne 0 ]; then
+            echo "✗ Build failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
+    done
+
+    run_upload_shinkai
+}
 
 # ------------------------------------------------------------------------------
 # Read (never set) the security patch date baked into the freshly built image.
@@ -815,6 +857,26 @@ Default Kernel Sashimi"
 }
 
 # ------------------------------------------------------------------------------
+# Variant configs (Shinkai)
+# ------------------------------------------------------------------------------
+run_upload_shinkai() {
+    stage_artifacts
+    release_and_notify \
+        "lgshinkai" \
+        "https://github.com/ShinkaiProject/.github/blob/main/ShinkaiBanner.png?raw=true" \
+        "Shinkai AOSP" \
+        "ShinkaiAOSP" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Work with both core and basic gapps
+Signed
+July security patch"
+}
+
+# ------------------------------------------------------------------------------
 # Dispatch
 # ------------------------------------------------------------------------------
 load_env
@@ -828,6 +890,7 @@ if [ "$MODE" = "upload" ]; then
         axion)     run_upload_axion ;;
         crdroid)   run_upload_crdroid ;;
         derpfest)  run_upload_derpfest ;;
+        shinkai)   run_upload_shinkai ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -839,6 +902,7 @@ else
         axion)     run_axion ;;
         crdroid)   run_crdroid ;;
         derpfest)  run_derpfest ;;
+        shinkai)   run_shinkai ;;
     esac
    # echo "✓ Finished blossom build: $TARGET"
 fi

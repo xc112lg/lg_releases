@@ -332,7 +332,7 @@ EOF
 run_shinkai() {
     common_prep
        repo init -u https://github.com/ShinkaiProject/shinkai_manifest -b hekkaideka --git-lfs --depth=1
-       git clone https://github.com/xc112lg/local_manifests --depth 1 -b evo16 .repo/local_manifests
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b shin .repo/local_manifests
        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     common_env_exports
     fixesdev

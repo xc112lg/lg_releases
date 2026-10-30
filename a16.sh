@@ -58,7 +58,7 @@ declare -A ROM_DEVICES=(
     [shinkai]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
  # [lunaris]="h872"
-  # [evolution]="h830 h850"
+  [evolution]="h872"
 )
 
 usage() {

@@ -14,7 +14,7 @@ export RBE_cas_concurrency=100
 export RBE_download_buffer_size=50000
 
 # 2. BuildBuddy Service & Auth
-export RBE_DIR="/mnt/data/rom/prebuilts/remoteexecution-client/buildbuddyfix"
+export RBE_DIR="prebuilts/remoteexecution-client/buildbuddyfix"
 export RBE_service="remote.buildbuddy.io:443"
 export RBE_remote_headers="x-buildbuddy-api-key=$BUILDBUDDY_API_KEY"
 export RBE_service_no_auth=true

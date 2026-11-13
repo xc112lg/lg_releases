@@ -16,9 +16,9 @@ main() {
   #  grep -q "android-17" .repo/manifests/default.xml && rm -rf prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 || true
  #   ls prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9
  #   ls prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9
-    repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch --force-remove-dirty 2>&1 | tee /tmp/output.txt
+    repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch --force-remove-dirty 2>&1 | tee $(pwd)/output.txt
 
- if ! grep -qe "Failing repos\|uncommitted changes are present" /tmp/output.txt ; then
+ if ! grep -qe "Failing repos\|uncommitted changes are present" $(pwd)/output.txt ; then
          echo "All repositories synchronized successfully."
          return 0
     else
@@ -26,7 +26,7 @@ main() {
     fi
 
     # Check if there are any failing repositories
-    if grep -q "Failing repos" /tmp/output.txt ; then
+    if grep -q "Failing repos" $(pwd)/output.txt ; then
         echo "Deleting failing repositories..."
         # Extract failing repositories from the error message and echo the deletion path
         while IFS= read -r line; do
@@ -39,11 +39,11 @@ main() {
             # Delete the repository
             rm -rf "$repo_path/$repo_name"
             rm -rf ".repo/project/$repo_path/$repo_name"/*.git
-        done <<< "$(cat /tmp/output.txt | awk '/Failing repos.*:/ {flag=1; next} /Try/ {flag=0} flag' | sort -u)"
+        done <<< "$(cat $(pwd)/output.txt | awk '/Failing repos.*:/ {flag=1; next} /Try/ {flag=0} flag' | sort -u)"
     fi
 
     # Check if there are any failing repositories due to uncommitted changes
-    if grep -q "uncommitted changes are present" /tmp/output.txt ; then
+    if grep -q "uncommitted changes are present" $(pwd)/output.txt ; then
         echo "Deleting repositories with uncommitted changes..."
 
         # Extract failing repositories from the error message and echo the deletion path
@@ -57,7 +57,7 @@ main() {
             # Delete the repository
             rm -rf "$repo_path/$repo_name"
             rm -rf ".repo/project/$repo_path/$repo_name"/*.git
-        done <<< "$(cat /tmp/output.txt | grep 'uncommitted changes are present')"
+        done <<< "$(cat $(pwd)/output.txt | grep 'uncommitted changes are present')"
     fi
 
     # Re-sync all repositories after deletion

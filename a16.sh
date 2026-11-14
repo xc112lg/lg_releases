@@ -155,6 +155,9 @@ common_env_exports() {
     export TARGET_ENABLE_BLUR=false
     export AXION_MAINTAINER=xc112lg
     export TARGET_INCLUDE_BCR=false
+
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
     
 }
 
@@ -856,6 +859,24 @@ July security patch
 Default Kernel Sashimi"
 }
 
+run_upload_lineage() {
+    stage_artifacts
+    release_and_notify \
+        "lineage-23.2" \
+        "https://raw.githubusercontent.com/LineageOS/hudson/main/lineage-banner.png" \
+        "LineageOS 23.2" \
+        "LineageOS" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Work with both core and basic gapps
+Signed
+July security patch
+Default Kernel Swan"
+}
+
 # ------------------------------------------------------------------------------
 # Variant configs (Shinkai)
 # ------------------------------------------------------------------------------
@@ -874,6 +895,40 @@ Debloated
 Work with both core and basic gapps
 Signed
 July security patch"
+}
+
+# ------------------------------------------------------------------------------
+# Variant: LineageOS 23.2 (https://github.com/LineageOS/android/tree/lineage-23.2)
+# ------------------------------------------------------------------------------
+run_lineage() {
+    common_prep
+       repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
+       curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    common_env_exports
+    fixesdev
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
+
+    grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
+
+    . build/envsetup.sh
+
+    local devices=(${ROM_DEVICES[lineage]})
+    if [ "$DEVICE" != "all" ]; then
+        devices=("$DEVICE")
+    fi
+
+    for dev in "${devices[@]}"; do
+        lunch "lineage_${dev}-bp4a-userdebug"
+        make installclean
+        m bacon
+        if [ $? -ne 0 ]; then
+            echo "✗ Build failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
+    done
+
+    run_upload_lineage
 }
 
 # ------------------------------------------------------------------------------

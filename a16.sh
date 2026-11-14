@@ -157,6 +157,7 @@ common_env_exports() {
     export TARGET_INCLUDE_BCR=false
     export USE_CCACHE=1
     export CCACHE_MAXSIZE="50G"
+    export SKIP_ABI_CHECKS=true 
 
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1

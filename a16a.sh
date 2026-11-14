@@ -50,7 +50,7 @@ RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 # among a given ROM's list (see the run_* functions below).
 declare -A ROM_DEVICES=(
 [lunaris]="h872 h870 us997 h873 h870d"
-    [lineage]="h872 h870 us997 h873 h870d"
+    [lineage]="h872 h870 us997 h873 h870d h830 h850"
    [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"

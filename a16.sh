@@ -3,7 +3,7 @@
 # blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
 #
 # Usage:
-#   ./build.sh lunaris     # or lineage / evolution / axion / crdroid / derpfest
+#   ./build.sh lunaris     # or lineage / evolution / axion / crdroid / derpfest / shinkai
 #   ./build.sh axion upload   # skip the build, only stage + release + notify
 #                              # (uses whatever is already in out/target/product/*/*.zip)
 #   curl -sf <raw-url-to-this-file> | bash -s lunaris
@@ -17,21 +17,16 @@
 #   ./build.sh lunaris build h870       # same idea for any other ROM
 # Naming a device not in that ROM's list is rejected.
 #
-# One script now does the whole pipeline per target (build → package → GitHub
-# release → Telegram announce), merging what used to be build.sh + upload.sh
-# (itself a merge of upevo.sh + multi_upload3.sh):
-#   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X / AxionAOSP /
-#      crDroid) for device "blossom". crDroid builds on the AxionAOSP source
-#      tree with crDroid's cr_config.xml feature-flag overlays layered on top.
-#   2. Stage the resulting zip/img/tar into the blossom_releases repo
+# One script does the whole pipeline per target (build → package → GitHub
+# release → Telegram announce):
+#   1. Build the ROM for device "blossom".
+#   2. Stage the resulting zip/img/tar into the release repo
 #   3. Create/replace the GitHub release + tag and upload the artifacts
 #   4. Send the Telegram announcement (Telegraph changelog + image fallback)
 #
-# All five ROMs release into ONE shared GitHub repo: blossom_releases
-# (must already exist on GitHub under xc112lg). Each ROM keeps its own
-# release tag/version string (e.g. LunarisAOSP-20260712, lineage-23.2-...,
-# EvolutionX-16.0-..., AxionAOSP-..., crDroid-...) so releases never collide
-# in the shared repo.
+# All ROMs release into ONE shared GitHub repo: lg_releases (must already
+# exist on GitHub under xc112lg). Each ROM keeps its own release tag/version
+# string so releases never collide in the shared repo.
 #
 # Override the release repo without editing the script:
 #   RELEASE_REPO=some_other_repo ./build.sh lunaris
@@ -49,16 +44,16 @@ RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 # Every ROM builds one or more sub-devices in a single pass; DEVICE selects
 # among a given ROM's list (see the run_* functions below).
 declare -A ROM_DEVICES=(
-[lunaris]="h872 h870 us997 h873 h870d"
+    [lunaris]="h872 h870 us997 h873 h870d"
     [lineage]="h872 h870 us997 h873 h870d h830 h850"
-   [evolution]="h872 h870 us997 h873 h870d"
+    [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d"
     [crdroid]="h872 h870 us997 h873 h870d"
     [shinkai]="h872 h870 us997 h873 h870d"
     #[crdroid]="h872 h870d"
- # [lunaris]="h872"
- # [evolution]="h872"
+    # [lunaris]="h872"
+    # [evolution]="h872"
 )
 
 usage() {
@@ -108,14 +103,14 @@ if [ "$DEVICE" != "all" ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# Shared setup (identical across all three variants)
+# Shared setup
 # ------------------------------------------------------------------------------
 
 # Configure git to authenticate against github.com via a request header
 # instead of embedding the token in the URL. URL-embedded tokens get stripped
-# by git on GitHub's redirect (https://github.com/... -> https://github.com/.../),
-# which is why we were getting "Username for 'https://github.com':" prompts.
-# The header survives redirects and applies to every git/repo operation.
+# by git on GitHub's redirect, which is why we were getting "Username for
+# 'https://github.com':" prompts. The header survives redirects and applies
+# to every git/repo operation.
 setup_git_auth() {
     [ -z "${GH_TOKEN:-}" ] && return
     git config --global --unset-all url."https://github.com/".insteadOf 2>/dev/null || true
@@ -140,10 +135,10 @@ load_env() {
 
 common_prep() {
     load_env
-rm -rf .repo/local_manifests/
-rm -rf device/lge vendor/lineage-priv/keys
-rm -rf vendor/lge/ kernel/lge/msm8996 vendor/extras
-rm -rf hardware/qcom-caf
+    rm -rf .repo/local_manifests/
+    rm -rf device/lge vendor/lineage-priv/keys
+    rm -rf vendor/lge/ kernel/lge/msm8996 vendor/extras
+    rm -rf hardware/qcom-caf
 }
 
 common_env_exports() {
@@ -157,17 +152,15 @@ common_env_exports() {
     export TARGET_INCLUDE_BCR=false
     export USE_CCACHE=1
     export CCACHE_MAXSIZE="50G"
-    export SKIP_ABI_CHECKS=true 
+    export SKIP_ABI_CHECKS=true
 
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
-    
 }
 
 fixesdev() {
 
 #grep -q 'errno != EINVAL && errno != ENOSYS' bionic/libc/upstream-openbsd/android/include/arc4random.h && echo "already applied, skipping" || curl -sL https://raw.githubusercontent.com/xc112lg/evolutiion_lgg6/refs/heads/main/arc4random_wipeonfork1.patch | patch -p1
-
 
 sed -i '/# Add wlan to PRODUCT_SOONG_NAMESPACES/,/hardware\/qcom-caf\/wlan\/qcwcn/{
   /# Add wlan to PRODUCT_SOONG_NAMESPACES/i\
@@ -194,7 +187,7 @@ sed -i '/<\/resources>/i\
 \
     <!-- Default for Settings.Global.DISABLE_WINDOW_BLURS -->\
     <integer name="def_disable_window_blurs">1</integer>' device/lge/msm8996-common/overlay-lineage/lineage-sdk/packages/LineageSettingsProvider/res/values/defaults.xml
-    
+
 }
 
 # ------------------------------------------------------------------------------
@@ -213,19 +206,15 @@ run_evolution() {
     sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
-   
+
     . build/envsetup.sh
-
-
 
     local devices=(${ROM_DEVICES[evolution]})
     if [ "$DEVICE" != "all" ]; then
         devices=("$DEVICE")
     fi
 
-    #echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
-        #echo "▶ crdroid: lunch lineage_${dev}-bp1a-user"
         lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m evolution
@@ -239,13 +228,12 @@ run_evolution() {
 }
 
 # ------------------------------------------------------------------------------
-# Variant: crDroid (built on the AxionAOSP/lineage-23.2 source tree, with
-# crDroid's feature-flag overlay files layered on top — same overlay paths
-# crDroid's own docs use when adding cr_config.xml onto a non-crDroid tree)
+# Variant: crDroid (built on the crDroid 16.0 source tree with crDroid's
+# feature-flag overlay files layered on top)
 # ------------------------------------------------------------------------------
 run_crdroid() {
     common_prep
-       repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth=1 
+       repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth=1
        git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
        cd frameworks/base;git reset --hard 71eec03e;cd -
        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
@@ -262,7 +250,6 @@ run_crdroid() {
         # sed -i 's/vendor\.usb\.rndis\.func\.name=rnsis_bam/vendor.usb.rndis.func.name=rndis_bam \\/' device/lge/msm8996-common/vendor_prop.mk
         # sed -i '/vendor\.usb\.rndis\.func\.name=rndis_bam \\/a\    persist.vendor.usb.config.extra=none' device/lge/msm8996-common/vendor_prop.mk
 
-
      . build/envsetup.sh
 
     local devices=(${ROM_DEVICES[crdroid]})
@@ -270,9 +257,7 @@ run_crdroid() {
         devices=("$DEVICE")
     fi
 
-   # echo "▶ crdroid: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
-        #echo "▶ crdroid: lunch lineage_${dev}-bp1a-userdebug"
         lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m bacon
@@ -306,8 +291,8 @@ EOF
 
 # sed -i '\|vendor/extras/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/config.mk
 # sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/config.mk
-    export WITH_ADB_INSECURE=true 
-    
+    export WITH_ADB_INSECURE=true
+
     grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
      . build/envsetup.sh
 
@@ -316,9 +301,7 @@ EOF
         devices=("$DEVICE")
     fi
 
-   # echo "▶ lunaris: building device(s): ${devices[*]}"
     for dev in "${devices[@]}"; do
-        #echo "▶ lunaris: lunch lineage_${dev}-bp4a-userdebug"
         lunch "lineage_${dev}-bp4a-userdebug"
         make installclean
         m bacon
@@ -331,6 +314,56 @@ EOF
     run_upload_lunaris
 }
 
+# ------------------------------------------------------------------------------
+# Variant: AxionAOSP (https://github.com/AxionAOSP/android/tree/lineage-23.2)
+# Build flow per the AxionAOSP README: axion <device> <type> <gms-variant>,
+# then ax -br -j<n>. Keys are generated once with gk -s.
+# ------------------------------------------------------------------------------
+run_axion() {
+    common_prep
+       repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
+       curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    common_env_exports
+    fixesdev
+        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
+
+    . build/envsetup.sh
+
+    # One-time private key generation (required by AxionOS before building)
+    gk -s
+
+    local devices=(${ROM_DEVICES[axion]})
+    if [ "$DEVICE" != "all" ]; then
+        devices=("$DEVICE")
+    fi
+
+    for dev in "${devices[@]}"; do
+        # axion <device_codename> [user|userdebug|eng] [gms|pico|core|full|va]
+        axion "$dev" userdebug va
+        if [ $? -ne 0 ]; then
+            echo "✗ axion lunch failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
+
+        ax -br -j"$(nproc)"
+        if [ $? -ne 0 ]; then
+            echo "✗ Build failed for $dev — aborting, skipping upload."
+            exit 1
+        fi
+    done
+
+    run_upload_axion
+}
+
+# ------------------------------------------------------------------------------
+# Variant: DerpFest (not yet configured — add the manifest/repo init steps here
+# following the same pattern as the other ROMs, then remove this stub)
+# ------------------------------------------------------------------------------
+run_derpfest() {
+    echo "✗ derpfest build is not configured yet. Add its repo init and lunch/build steps to run_derpfest()."
+    exit 1
+}
 
 # ------------------------------------------------------------------------------
 # Variant: Shinkai AOSP (ShinkaiProject/shinkai_manifest, hekkaideka branch)
@@ -350,8 +383,6 @@ run_shinkai() {
     sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/h873/lineage_h873.mk
     sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/lge/us997/lineage_us997.mk
     sed -i '$a SHINKAI_MAINTAINER := "xc112lg"' device/lge/msm8996-common/BoardConfigCommon.mk
-
-    
 
     . build/envsetup.sh
 
@@ -394,8 +425,8 @@ get_security_patch() {
 }
 
 # ------------------------------------------------------------------------------
-# Stage 1 (equivalent of upevo.sh): clone the target repo and copy build output
-# into it. Sets STAGE_DIR to the directory to cd into for stage 2.
+# Stage 1: clone the target repo and copy build output into it. Changes into
+# the cloned repo directory when finished.
 # ------------------------------------------------------------------------------
 stage_artifacts() {
     local repo="$RELEASE_REPO"
@@ -415,7 +446,7 @@ stage_artifacts() {
         device=$(basename "$(dirname "$img")")
         cp "$img" "$repo/${device}_recovery.img"
     done
-    
+
     # for img in out/target/product/*/boot.img; do
     #     device=$(basename "$(dirname "$img")")
     #     cp "$img" "$repo/${device}_boot.img"
@@ -428,17 +459,16 @@ stage_artifacts() {
 
     cd "$repo"
 
-    # lineage's upevo.sh drops the stock recovery/OTA package before uploading
+    # Drop the stock recovery/OTA package before uploading
     if [ "$TARGET" = "lineage" ] || [ "$TARGET" = "axion" ]; then
         rm -f *-ota.zip
     fi
 }
 
 # ------------------------------------------------------------------------------
-# Stage 2 (equivalent of multi_upload3.sh): GitHub release + Telegram notify.
-# Only the handful of fields that actually differ between ROMs (title, banner,
-# issues/fixes/notes bullets, hashtag) are passed in — everything else in the
-# Telegram message comes from the one shared TEMPLATE below.
+# Stage 2: GitHub release + Telegram notify. Only the handful of fields that
+# differ between ROMs (title, banner, issues/fixes/notes bullets, hashtag) are
+# passed in; everything else comes from the one shared TEMPLATE below.
 # ------------------------------------------------------------------------------
 release_and_notify() {
     local version_default="$1"
@@ -448,7 +478,7 @@ release_and_notify() {
     local issues="$5"
     local fixes="$6"
     local notes="$7"
-    
+
     local github_repo_default="$RELEASE_REPO"
 
     local telegram_message
@@ -516,7 +546,6 @@ TEMPLATE
     while gh release view "$version" &> /dev/null; do
         suffix=$((suffix + 1))
         version="${base_version}-${suffix}"
-        #echo "Tag $base_version already exists, trying $version instead..."
     done
 
     git tag -a "$version" -m "Release $version"
@@ -592,88 +621,88 @@ TEMPLATE
         local url="${remaining%%|*}"
         local size="${remaining##*|}"
 
-# Known device codenames to detect in the filename (add more as needed)
-    known_devices=( "h870d" "h870" "h871" "h872" "h873" "h930" "us997" "ls993" "vs988" "as993")
-    device_code=""
-    filename_lower=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
-    for dev in "${known_devices[@]}"; do
-        if [[ "$filename_lower" == *"$dev"* ]]; then
-            device_code="$dev"
-            break
-        fi
-    done
+        # Known device codenames to detect in the filename (add more as needed)
+        known_devices=( "h870d" "h870" "h871" "h872" "h873" "h930" "us997" "ls993" "vs988" "as993")
+        device_code=""
+        filename_lower=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
+        for dev in "${known_devices[@]}"; do
+            if [[ "$filename_lower" == *"$dev"* ]]; then
+                device_code="$dev"
+                break
+            fi
+        done
 
-    # Create label based on filename but don't show actual filename
-    label="File"
-    download_links=""
+        # Create label based on filename but don't show actual filename
+        label="File"
+        download_links=""
 
-    if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
-        if [ -n "$device_code" ]; then
-            label="📱 ${device_code} Vanilla"
-        else
-            label="📱 Vanilla"
+        if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
+            if [ -n "$device_code" ]; then
+                label="📱 ${device_code} Vanilla"
+            else
+                label="📱 Vanilla"
+            fi
+            download_links="<a href=\"${url}\">GitHub</a>"
+        elif [[ "$filename" == *"GApps"* ]] || [[ "$filename" == *"gapps"* ]]; then
+            label="🎯 GApps Package"
+            download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
+        elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
+            if [ -n "$device_code" ]; then
+                label="🔧 ${device_code} Recovery"
+            else
+                label="🔧 Recovery"
+            fi
+            download_links="<a href=\"${url}\">GitHub</a>"
+        elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"Boot"* ]]; then
+            if [ -n "$device_code" ]; then
+                label="🔧 ${device_code} boot"
+            else
+                label="🔧 boot"
+            fi
+            download_links="<a href=\"${url}\">GitHub</a>"
+        elif [[ "$filename" == *.zip ]]; then
+            if [ -n "$device_code" ]; then
+                label="📦 ${device_code} ROM"
+            else
+                label="📦 ROM"
+            fi
+            download_links="<a href=\"${url}\">GitHub</a>"
+        elif [[ "$filename" == *.img ]]; then
+            if [ -n "$device_code" ]; then
+                label="💾 ${device_code} Image File"
+            else
+                label="💾 Image File"
+            fi
+            download_links="<a href=\"${url}\">GitHub</a>"
         fi
-        download_links="<a href=\"${url}\">GitHub</a>"
-    elif [[ "$filename" == *"GApps"* ]] || [[ "$filename" == *"gapps"* ]]; then
-        label="🎯 GApps Package"
-        download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
-    elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
-        if [ -n "$device_code" ]; then
-            label="🔧 ${device_code} Recovery"
-        else
-            label="🔧 Recovery"
-        fi
-        download_links="<a href=\"${url}\">GitHub</a>"
-    elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"boot"* ]]; then
-        if [ -n "$device_code" ]; then
-            label="🔧 ${device_code} boot"
-        else
-            label="🔧 boot"
-        fi
-        download_links="<a href=\"${url}\">GitHub</a>"
-    elif [[ "$filename" == *.zip ]]; then
-        if [ -n "$device_code" ]; then
-            label="📦 ${device_code} ROM"
-        else
-            label="📦 ROM"
-        fi
-        download_links="<a href=\"${url}\">GitHub</a>"
-    elif [[ "$filename" == *.img ]]; then
-        if [ -n "$device_code" ]; then
-            label="💾 ${device_code} Image File"
-        else
-            label="💾 Image File"
-        fi
-        download_links="<a href=\"${url}\">GitHub</a>"
-    fi
 
-    # Only show label and links, NO original full filename anywhere
-    DOWNLOADS_SECTION+="
+        # Only show label and links, NO original full filename anywhere
+        DOWNLOADS_SECTION+="
 🔹 ${label} - ${download_links} (${size})"
 
-    # --- XDA BBCode entries (same file_entry data, formatted for xdaforums.com) ---
-    bbcode_dev_label="${device_code:-device}"
-    if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
-        BBCODE_ROM+=("[*][B]📱 ${bbcode_dev_label} Vanilla ROM[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
-    elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
-        BBCODE_RECOVERY+=("[*][B]🔧 ${bbcode_dev_label} Recovery Image[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
-    elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"Boot"* ]]; then
-        BBCODE_RECOVERY+=("[*][B]🔧 ${bbcode_dev_label} Boot Image[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
-    elif [[ "$filename" == *.zip ]]; then
-        BBCODE_ROM+=("[*][B]📦 ${bbcode_dev_label} ROM[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
-    elif [[ "$filename" == *.img ]]; then
-        BBCODE_RECOVERY+=("[*][B]💾 ${bbcode_dev_label} Image File[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
-    fi
+        # --- XDA BBCode entries (same file_entry data, formatted for xdaforums.com) ---
+        bbcode_dev_label="${device_code:-device}"
+        if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
+            BBCODE_ROM+=("[*][B]📱 ${bbcode_dev_label} Vanilla ROM[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
+        elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
+            BBCODE_RECOVERY+=("[*][B]🔧 ${bbcode_dev_label} Recovery Image[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
+        elif [[ "$filename" == *"boot"* ]] || [[ "$filename" == *"Boot"* ]]; then
+            BBCODE_RECOVERY+=("[*][B]🔧 ${bbcode_dev_label} Boot Image[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
+        elif [[ "$filename" == *.zip ]]; then
+            BBCODE_ROM+=("[*][B]📦 ${bbcode_dev_label} ROM[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
+        elif [[ "$filename" == *.img ]]; then
+            BBCODE_RECOVERY+=("[*][B]💾 ${bbcode_dev_label} Image File[/B] ([SIZE=3]${size}[/SIZE])[URL='${url}']Download[/URL]")
+        fi
 
-done
+    done
 
-# GApps line shown once, not repeated per entry
-DOWNLOADS_SECTION+="
+    # GApps line shown once, not repeated per entry
+    DOWNLOADS_SECTION+="
 🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
 
     # ============================================
     # XDA BBCODE OUTPUT (built from the same FILE_ENTRIES as the Telegram post,
-    # saved to disk + printed so it can be pasted straight into two separate
+    # saved to disk so it can be pasted straight into two separate
     # xdaforums.com posts — one for ROM zips, one for recovery images)
     # ============================================
     local BBCODE_FILE
@@ -687,11 +716,6 @@ DOWNLOADS_SECTION+="
         printf '%s\n' "${BBCODE_RECOVERY[@]}"
         echo "[/LIST]"
     } > "$BBCODE_FILE"
-
-    # echo "✓ XDA BBCode saved to ${BBCODE_FILE}"
-    # echo "-------------------- XDA BBCode --------------------"
-    # cat "$BBCODE_FILE"
-    # echo "------------------------------------------------------"
 
     # Send the same BBCode as its own separate Telegram message (plain text —
     # no parse_mode, so the [brackets] are sent as-is and not misread as HTML)
@@ -711,13 +735,6 @@ JSONEOF
             -d @"$BBCODE_JSON" \
             "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage")
         rm -f "$BBCODE_JSON"
-
-        # if echo "$BBCODE_RESPONSE" | grep -q '"ok":true'; then
-        #     #echo "✓ XDA BBCode sent to Telegram (separate message)!"  > /dev/null
-        # else
-        #     echo "✗ Failed to send XDA BBCode to Telegram"
-        #     echo "Response: $BBCODE_RESPONSE"
-        # fi
     else
         echo "⚠ Telegram credentials not set. Skipping BBCode Telegram send."
     fi
@@ -730,15 +747,11 @@ JSONEOF
     if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
         echo "⚠ Telegram credentials not set. Skipping Telegram notification."
     else
-       # echo "Sending Telegram notification..."
-
         local MSG_LENGTH=${#telegram_message}
-       # echo "Message length: $MSG_LENGTH characters"
         local CAPTION_LIMIT=3500
         local FALLBACK=0
 
         if [ $MSG_LENGTH -le $CAPTION_LIMIT ]; then
-            # echo "✓ Message fits in caption - sending merged (image + text in one)"
             local TEMP_JSON
             TEMP_JSON=$(mktemp)
             cat > "$TEMP_JSON" << JSONEOF
@@ -820,7 +833,6 @@ July security patch
 Default Kernel Sashimi"
 }
 
-
 run_upload_lunaris() {
     stage_artifacts
     release_and_notify \
@@ -841,7 +853,6 @@ July security patch
 Default Kernel Sashimi"
 }
 
-
 run_upload_crdroid() {
     stage_artifacts
     release_and_notify \
@@ -860,6 +871,27 @@ Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
 Default Kernel Sashimi"
+}
+
+run_upload_axion() {
+    stage_artifacts
+    release_and_notify \
+        "lgaxion" \
+        "https://github.com/AxionAOSP.png" \
+        "AxionAOSP" \
+        "AxionAOSP" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Work with both core and basic gapps
+Signed
+July security patch"
+}
+
+run_upload_derpfest() {
+    echo "✗ derpfest upload is not configured yet. Add its release config to run_upload_derpfest()."
+    exit 1
 }
 
 run_upload_lineage() {
@@ -963,5 +995,4 @@ else
         derpfest)  run_derpfest ;;
         shinkai)   run_shinkai ;;
     esac
-   # echo "✓ Finished blossom build: $TARGET"
 fi

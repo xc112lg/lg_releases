@@ -347,7 +347,7 @@ EOF
 
 rm device/axion/common/sepolicy/vendor/qcom/ax_diagnostics.te
 sed -i '/sysfs_battery_supply/d' device/axion/common/sepolicy/private/ax_diagnostics.te
-
+sed -i '/vendor_sysfs_/d' device/axion/common/sepolicy/vendor/qcom/ax_kernel_manager.te
 
 
     . build/envsetup.sh

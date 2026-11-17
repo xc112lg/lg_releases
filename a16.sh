@@ -331,7 +331,21 @@ run_axion() {
 
 sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libbinder-v32",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
 
+cat >> device/axion/common/sepolicy/private/ax_diagnostics.te << 'EOF'
 
+# battery, devfreq, graphics, kgsl sysfs (moved from vendor/qcom)
+allow ax_diagnostics sysfs_battery_supply:dir r_dir_perms;
+allow ax_diagnostics sysfs_battery_supply:file r_file_perms;
+allow ax_diagnostics sysfs_devfreq:dir r_dir_perms;
+allow ax_diagnostics sysfs_devfreq:file r_file_perms;
+allow ax_diagnostics sysfs_graphics:dir r_dir_perms;
+allow ax_diagnostics sysfs_graphics:file r_file_perms;
+allow ax_diagnostics sysfs_kgsl:dir r_dir_perms;
+allow ax_diagnostics sysfs_kgsl:file r_file_perms;
+allow ax_diagnostics sysfs_kgsl:lnk_file read;
+EOF
+
+rm device/axion/common/sepolicy/vendor/qcom/ax_diagnostics.te
 
 
 

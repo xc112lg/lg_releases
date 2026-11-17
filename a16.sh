@@ -138,7 +138,7 @@ common_prep() {
     rm -rf .repo/local_manifests/
     rm -rf device/lge vendor/lineage-priv/keys
     rm -rf vendor/lge/ kernel/lge/msm8996 vendor/extras
-    rm -rf hardware/qcom-caf
+    rm -rf hardware/qcom-caf device/axion
 }
 
 common_env_exports() {

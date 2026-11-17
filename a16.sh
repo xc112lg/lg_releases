@@ -332,18 +332,7 @@ run_axion() {
 sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libbinder-v32",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
 
 
-FILE=device/axion/common/sepolicy/vendor/qcom/ax_diagnostics.te
 
-# Remove every rule that references the undeclared battery supply types
-sed -i '/sysfs_battery_supply:/d' "$FILE"
-
-# Append each sysfs_batteryinfo rule only if it isn't already present
-while IFS= read -r rule; do
-  grep -qxF "$rule" "$FILE" || sed -i "\$a $rule" "$FILE"
-done <<'EOF'
-allow ax_diagnostics sysfs_batteryinfo:dir r_dir_perms;
-allow ax_diagnostics sysfs_batteryinfo:file r_file_perms;
-EOF
 
 
 

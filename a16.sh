@@ -331,23 +331,9 @@ run_axion() {
 
 sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libbinder-v32",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
 
-cat >> device/axion/common/sepolicy/private/ax_diagnostics.te << 'EOF'
 
-# battery, devfreq, graphics, kgsl sysfs (moved from vendor/qcom)
-allow ax_diagnostics sysfs_battery_supply:dir r_dir_perms;
-allow ax_diagnostics sysfs_battery_supply:file r_file_perms;
-allow ax_diagnostics sysfs_devfreq:dir r_dir_perms;
-allow ax_diagnostics sysfs_devfreq:file r_file_perms;
-allow ax_diagnostics sysfs_graphics:dir r_dir_perms;
-allow ax_diagnostics sysfs_graphics:file r_file_perms;
-allow ax_diagnostics sysfs_kgsl:dir r_dir_perms;
-allow ax_diagnostics sysfs_kgsl:file r_file_perms;
-allow ax_diagnostics sysfs_kgsl:lnk_file read;
-EOF
-
-rm device/axion/common/sepolicy/vendor/qcom/ax_diagnostics.te
-sed -i '/sysfs_battery_supply/d' device/axion/common/sepolicy/private/ax_diagnostics.te
-sed -i '/vendor_sysfs_/d' device/axion/common/sepolicy/vendor/qcom/ax_kernel_manager.te
+perl -0pi -e 's/^.*vendor_sysfs_.*\n//mg; s/^ifdef\(`HAS_KGSL_MAX_GPUCLK.*?^\x27\)\n//msg; s/\n{3,}/\n\n/g; s/\A\n+//; s/\A(?!#)/# sysfs_* types only; vendor_sysfs_* are not declared in this tree\n/ if $ARGV=~m{kernel_manager}' device/axion/common/sepolicy/vendor/qcom/ax_kernel_manager.te && grep -c vendor_sysfs device/axion/common/sepolicy/vendor/qcom/ax_kernel_manager.te
+perl -0pi -e 's/^# battery, devfreq, graphics, kgsl sysfs.*\n//mg; s/^allow ax_diagnostics sysfs_(battery_supply|devfreq|graphics|kgsl)\b.*\n//mg; s/\n{3,}/\n\n/g' device/axion/common/sepolicy/private/ax_diagnostics.te && grep -c 'sysfs_devfreq\|sysfs_battery_supply\|sysfs_graphics\|sysfs_kgsl' device/axion/common/sepolicy/private/ax_diagnostics.te
 
     . build/envsetup.sh
 
@@ -366,7 +352,8 @@ sed -i '/vendor_sysfs_/d' device/axion/common/sepolicy/vendor/qcom/ax_kernel_man
             echo "✗ axion lunch failed for $dev — aborting, skipping upload."
             exit 1
         fi
-
+axion h872 userdebug va
+ax -br -j"$(nproc)"
         ax -br -j"$(nproc)"
         if [ $? -ne 0 ]; then
             echo "✗ Build failed for $dev — aborting, skipping upload."

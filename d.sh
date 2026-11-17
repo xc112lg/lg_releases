@@ -1,4 +1,3 @@
-
 cat >> device/axion/common/sepolicy/private/ax_diagnostics.te << 'EOF'
 
 # battery, devfreq, graphics, kgsl sysfs (moved from vendor/qcom)
@@ -16,3 +15,5 @@ EOF
 rm device/axion/common/sepolicy/vendor/qcom/ax_diagnostics.te
 sed -i '/sysfs_battery_supply/d' device/axion/common/sepolicy/private/ax_diagnostics.te
 sed -i '/vendor_sysfs_/d' device/axion/common/sepolicy/vendor/qcom/ax_kernel_manager.te
+sed -i '/sysfs_devfreq/d' device/axion/common/sepolicy/private/ax_diagnostics.te device/axion/common/sepolicy/vendor/qcom/ax_kernel_manager.te
+

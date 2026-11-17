@@ -322,7 +322,7 @@ EOF
 run_axion() {
     common_prep
        repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs
-       git clone https://github.com/xc112lg/local_manifests --depth 1 -b ll .repo/local_manifests
+       git clone https://github.com/xc112lg/local_manifests --depth 1 -b ax .repo/local_manifests
        curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     common_env_exports
     fixesdev

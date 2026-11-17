@@ -329,12 +329,8 @@ run_axion() {
         curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/blur.sh | bash
 
 
-f=hardware/lineage/compat/Android.bp
-start=$(grep -n 'name: "libbinder-v32"' "$f" | cut -d: -f1)
-start=$((start-1))   # the opening cc_prebuilt_library_shared { line sits just above name:
-end=$(awk -v s="$start" 'NR>s && /^}/{print NR; exit}' "$f")
-echo "Block: lines $start-$end"
-sed -n "${start}p;${end}p" "$f"
+sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libbinder-v32",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
+grep -n "libbinder-v32" hardware/lineage/compat/Android.bp
 
 
 

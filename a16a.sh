@@ -509,9 +509,10 @@ release_and_notify() {
 <b>❤️ Credits & Thanks:</b>
 • @Inkypen for bringing it up to make it work on android16
 • npjohnson
+• @Anna_Choudhary for build server
 • lineageOS dev team
 • ROMSG for kernel
-• Thanks to <a href="http://foss.crave.io">crave.io</a> for server
+• Thanks to crave.io
 • Thanks to all other devs
 
 <b>🌐 Stay Updated:</b>

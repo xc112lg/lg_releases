@@ -22,7 +22,7 @@
 #   1. Build the ROM for device "blossom".
 #   2. Stage the resulting zip/img/tar into the release repo
 #   3. Create/replace the GitHub release + tag and upload the artifacts
-#   4. Send the Telegram announcement (Telegraph changelog + image fallback)
+#   4. Send the Telegram messages (ROM BBCode, recovery BBCode, announcement)
 #
 # All ROMs release into ONE shared GitHub repo: lg_releases (must already
 # exist on GitHub under xc112lg). Each ROM keeps its own release tag/version
@@ -40,6 +40,7 @@ DEVICE="${3:-all}"
 
 # Set repo name globally to ensure consistency across all functions
 RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
+GITHUB_OWNER="${GITHUB_OWNER:-xc112lg}"
 
 # Every ROM builds one or more sub-devices in a single pass; DEVICE selects
 # among a given ROM's list (see the run_* functions below).
@@ -352,8 +353,6 @@ perl -0pi -e 's/^# battery, devfreq, graphics, kgsl sysfs.*\n//mg; s/^allow ax_d
             echo "✗ axion lunch failed for $dev — aborting, skipping upload."
             exit 1
         fi
-axion h872 userdebug va
-ax -br -j"$(nproc)"
         ax -br -j"$(nproc)"
         if [ $? -ne 0 ]; then
             echo "✗ Build failed for $dev — aborting, skipping upload."
@@ -506,7 +505,7 @@ release_and_notify() {
 • {{SECURITY_PATCH}} security patch
 • Default Kernel Swan
 
-<b>❤️ Credits & Thanks:</b>
+<b>❤️ Credits &amp; Thanks:</b>
 • @Inkypen for bringing it up to make it work on android16
 • npjohnson
 • @Anna_Choudhary for build server
@@ -710,42 +709,27 @@ TEMPLATE
 🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
 
     # ============================================
-    # XDA BBCODE OUTPUT (built from the same FILE_ENTRIES as the Telegram post,
-    # saved to disk so it can be pasted straight into two separate
-    # xdaforums.com posts — one for ROM zips, one for recovery images)
+    # XDA BBCODE OUTPUT: two files, ROM list and recovery list, each pasteable
+    # as its own xdaforums.com post
     # ============================================
-    local BBCODE_FILE
-    BBCODE_FILE="$(pwd)/bbcode_${version}.txt"
-    {
-        echo "[LIST]"
-        printf '%s\n' "${BBCODE_ROM[@]}"
-        echo "[/LIST]"
-        echo
-        echo "[LIST]"
-        printf '%s\n' "${BBCODE_RECOVERY[@]}"
-        echo "[/LIST]"
-    } > "$BBCODE_FILE"
+    local BBCODE_ROM_FILE="$(pwd)/bbcode_${version}_rom.txt"
+    local BBCODE_RECOVERY_FILE="$(pwd)/bbcode_${version}_recovery.txt"
+    rm -f "$BBCODE_ROM_FILE" "$BBCODE_RECOVERY_FILE"
 
-    # Send the same BBCode as its own separate Telegram message (plain text —
-    # no parse_mode, so the [brackets] are sent as-is and not misread as HTML)
-    if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
-        echo "."
-        local BBCODE_JSON
-        BBCODE_JSON=$(mktemp)
-        cat > "$BBCODE_JSON" << JSONEOF
-{
-    "chat_id": $TELEGRAM_CHAT_ID,
-    "text": $(jq -R -s . < "$BBCODE_FILE")
-}
-JSONEOF
-        local BBCODE_RESPONSE
-        BBCODE_RESPONSE=$(curl -s -X POST \
-            -H "Content-Type: application/json" \
-            -d @"$BBCODE_JSON" \
-            "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage")
-        rm -f "$BBCODE_JSON"
-    else
-        echo "⚠ Telegram credentials not set. Skipping BBCode Telegram send."
+    if [ ${#BBCODE_ROM[@]} -gt 0 ]; then
+        {
+            echo "[LIST]"
+            printf '%s\n' "${BBCODE_ROM[@]}"
+            echo "[/LIST]"
+        } > "$BBCODE_ROM_FILE"
+    fi
+
+    if [ ${#BBCODE_RECOVERY[@]} -gt 0 ]; then
+        {
+            echo "[LIST]"
+            printf '%s\n' "${BBCODE_RECOVERY[@]}"
+            echo "[/LIST]"
+        } > "$BBCODE_RECOVERY_FILE"
     fi
 
     # Substitute placeholders now that CHANGELOG_URL/DOWNLOADS_SECTION are known
@@ -754,69 +738,60 @@ JSONEOF
     telegram_message="${telegram_message//\{\{BUILD_DATE\}\}/$(date '+%d/%m/%y')}"
 
     if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
-        echo "⚠ Telegram credentials not set. Skipping Telegram notification."
-    else
-        local MSG_LENGTH=${#telegram_message}
-        local CAPTION_LIMIT=3500
-        local FALLBACK=0
-
-        if [ $MSG_LENGTH -le $CAPTION_LIMIT ]; then
-            local TEMP_JSON
-            TEMP_JSON=$(mktemp)
-            cat > "$TEMP_JSON" << JSONEOF
-{
-    "chat_id": $TELEGRAM_CHAT_ID,
-    "photo": "$banner_image",
-    "caption": $(printf '%s\n' "$telegram_message" | jq -R -s .),
-    "parse_mode": "HTML"
-}
-JSONEOF
-            local RESPONSE
-            RESPONSE=$(curl -s -X POST \
-                -H "Content-Type: application/json" \
-                -d @"$TEMP_JSON" \
-                "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendPhoto")
-            rm -f "$TEMP_JSON"
-
-        else
-            echo "⚠ Message too long for caption ($MSG_LENGTH > $CAPTION_LIMIT)"
-            echo "✓ Using fallback: Sending image + text as separate messages"
-            FALLBACK=1
-        fi
-
-        if [ "$FALLBACK" == "1" ]; then
-            echo "Sending image first..."
-            curl -s -X POST \
-                -H "Content-Type: application/json" \
-                -d "{\"chat_id\": $TELEGRAM_CHAT_ID, \"photo\": \"$banner_image\", \"parse_mode\": \"HTML\"}" \
-                "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendPhoto" > /dev/null
-
-            echo "Sending full message..."
-            local TEMP_JSON
-            TEMP_JSON=$(mktemp)
-            cat > "$TEMP_JSON" << JSONEOF
-{
-    "chat_id": $TELEGRAM_CHAT_ID,
-    "text": $(printf '%s\n' "$telegram_message" | jq -R -s .),
-    "parse_mode": "HTML"
-}
-JSONEOF
-            local RESPONSE
-            RESPONSE=$(curl -s -X POST \
-                -H "Content-Type: application/json" \
-                -d @"$TEMP_JSON" \
-                "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage")
-            rm -f "$TEMP_JSON"
-
-            if echo "$RESPONSE" | grep -q '"ok":true'; then
-                echo "✓ Telegram notification sent successfully (fallback)!"
-            else
-                echo "✗ Failed to send Telegram notification"
-                echo "Response: $RESPONSE"
-            fi
-        fi
+        echo "⚠ Telegram credentials not set. Skipping Telegram notifications."
+        return
     fi
 
+    # POST a JSON body built by jq; print Telegram's reply and report errors
+    tg_post() {
+        local method="$1"; shift
+        local resp
+        resp=$(curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n "$@")" \
+            "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/$method")
+        if echo "$resp" | jq -e '.ok == true' >/dev/null 2>&1; then
+            echo "✓ Telegram $method ok"
+            return 0
+        fi
+        echo "✗ Telegram $method failed: $resp"
+        return 1
+    }
+
+    # 1) BBCode: ROM list and recovery list, each sent as its own plain-text
+    #    message (no parse_mode, so [brackets] are sent as-is)
+    for bb in "$BBCODE_ROM_FILE" "$BBCODE_RECOVERY_FILE"; do
+        if [ -s "$bb" ]; then
+            tg_post sendMessage \
+                --arg chat_id "$TELEGRAM_CHAT_ID" \
+                --rawfile text "$bb" \
+                '{chat_id:$chat_id, text:$text}'
+        fi
+    done
+
+    # 2) Main announcement. Photo captions are capped at 1024 characters, so
+    #    use a caption only when it fits with margin; otherwise send the banner
+    #    and the text as two messages.
+    local CAPTION_LIMIT=1000
+    local MSG_LENGTH=${#telegram_message}
+
+    if [ "$MSG_LENGTH" -le "$CAPTION_LIMIT" ]; then
+        tg_post sendPhoto \
+            --arg chat_id "$TELEGRAM_CHAT_ID" \
+            --arg photo "$banner_image" \
+            --arg caption "$telegram_message" \
+            '{chat_id:$chat_id, photo:$photo, caption:$caption, parse_mode:"HTML"}'
+    else
+        echo "ℹ Message is $MSG_LENGTH chars (caption limit $CAPTION_LIMIT): sending banner, then text"
+        tg_post sendPhoto \
+            --arg chat_id "$TELEGRAM_CHAT_ID" \
+            --arg photo "$banner_image" \
+            '{chat_id:$chat_id, photo:$photo}'
+        tg_post sendMessage \
+            --arg chat_id "$TELEGRAM_CHAT_ID" \
+            --arg text "$telegram_message" \
+            '{chat_id:$chat_id, text:$text, parse_mode:"HTML", disable_web_page_preview:true}'
+    fi
 }
 
 # ------------------------------------------------------------------------------

@@ -16,18 +16,16 @@ fi
 
 cd "$WORKDIR"
 
-count=0
 find . -path ./.git -prune -o -type f -name '*.xml' -print0 |
 while IFS= read -r -d '' file; do
   if grep -qE '[[:space:]]path="[^"]*"' "$file"; then
-    count=$((count + 1))
     if [ "$DRY_RUN" = "1" ]; then
       echo "[dry-run] $file"
     else
       sed -i -E 's/[[:space:]]+path="[^"]*"//g' "$file"
       echo "updated $file"
-    end
+    fi
   fi
 done
 
-echo "Done. Files matched: see output above."
+echo "Done."

@@ -3,11 +3,7 @@
 # WARNING: This permanently deletes the listed top-level folders and everything inside them.
 set -euo pipefail
 
-if [[ ! -d ".repo" || ! -f "build/envsetup.sh" ]]; then
-    echo "Error: this does not look like an Android source-tree root." >&2
-    echo "Change to the source-tree root and run this script again." >&2
-    exit 1
-fi
+
 
 echo "The following top-level folders will be permanently deleted:"
 printf "  %s\n" "android"

@@ -445,8 +445,8 @@ stage_artifacts() {
         exit 1
     fi
 
-    rm -rf "$repo"
-    git clone -q "https://github.com/xc112lg/${repo}" >/dev/null 2>&1
+   # rm -rf "$repo"
+  #  git clone -q "https://github.com/xc112lg/${repo}" >/dev/null 2>&1
 
     mv out/target/product/*/*.zip "$repo/"
 

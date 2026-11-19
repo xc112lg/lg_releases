@@ -45,7 +45,7 @@ RELEASE_REPO="${RELEASE_REPO:-lg_releases}"
 # among a given ROM's list (see the run_* functions below).
 declare -A ROM_DEVICES=(
     [lunaris]="h872 h870 us997 h873 h870d"
-    [lineage]="h850"
+    [lineage]="h872 h870 us997 h873 h870d"
     [evolution]="h872 h870 us997 h873 h870d"
     [derpfest]="h872 h870 us997 h873 h870d"
     [axion]="h872 h870 us997 h873 h870d h830 h850"
@@ -906,7 +906,7 @@ run_upload_lineage() {
     stage_artifacts
     release_and_notify \
         "lineage-23.2" \
-        "https://raw.githubusercontent.com/LineageOS/hudson/main/lineage-banner.png" \
+        "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
         "LineageOS 23.2" \
         "LineageOS" \
         "NFC not working" \

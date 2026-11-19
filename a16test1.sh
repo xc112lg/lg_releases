@@ -439,16 +439,16 @@ get_security_patch() {
 stage_artifacts() {
     local repo="$RELEASE_REPO"
 
-    # local built_zips=(out/target/product/*/*.zip)
-    # if [ ${#built_zips[@]} -eq 0 ]; then
-    #     echo "✗ No built zip found under out/target/product/*/ — did the build succeed?"
-    #     exit 1
-    # fi
+    local built_zips=(out/target/product/*/*.zip)
+    if [ ${#built_zips[@]} -eq 0 ]; then
+        echo "✗ No built zip found under out/target/product/*/ — did the build succeed?"
+        exit 1
+    fi
 
-   # rm -rf "$repo"
-  #  git clone -q "https://github.com/xc112lg/${repo}" >/dev/null 2>&1
+   rm -rf "$repo"
+   git clone -q "https://github.com/xc112lg/${repo}" >/dev/null 2>&1
 
-    mv out/target/product/*/*.zip "$repo/"
+    cp out/target/product/*/*.zip "$repo/"
 
     for img in out/target/product/*/recovery.img; do
         device=$(basename "$(dirname "$img")")
